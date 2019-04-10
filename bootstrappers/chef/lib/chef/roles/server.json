@@ -1,0 +1,73 @@
+// Things we want standard on all server boxes, primarily:
+// - Security
+// - Look and feel
+// - default users, groups etc
+{
+  "name": "server",
+  "description": "A server of some kind...",
+  "default_attributes": {
+    "apt" : {
+      "compile_time_update": true,
+      "unattended_upgrades" : {
+        "enable" : true,
+        "allowed_origins" : [
+          "${distro_id} stable",
+          "${distro_id} ${distro_codename}-security",
+          "${distro_id} ${distro_codename}-updates"
+        ],
+        "automatic_reboot" : false
+      }
+    },
+    "authorization": {
+      "sudo": {
+        // everyone in the group sysadmin gets sudo rights
+        "groups": ["sudo"],
+        // the deploy user specifically gets sudo rights
+        "users": ["deploy"],
+        // whether a user with sudo rights can execute sudo
+        // commands without entering their password.
+        "passwordless": true
+      }
+    },
+    "build-essential": {
+      "compile_time": true
+    },
+    "locales" : {
+      "locale_file": "/etc/locale.gen",
+      "packages" : ["locales"],
+      "default" : "en_US.utf8"
+    },
+    "openssh" : {
+      "server" : {
+        "password_authentication" : "no",
+        "challenge_response_authentication" : "no",
+        "permit_empty_passwords" : "no",
+        "use_pam" : "no",
+        "x11_forwarding" : "no",
+        "permit_root_login" : "no"
+      }
+    }
+  },
+  "json_class": "Chef::Role",
+  "run_list": [
+    "recipe[apt]",
+    // required for generating secure passwords
+    "recipe[openssl::default]",
+    // required for building from source
+    "recipe[build-essential::default]",
+    // enable unattended upgrades
+    "recipe[apt::unattended-upgrades]",
+    // enable automatic time sync
+    "recipe[ntp::default]",
+    // make sure deploy user has sudo rights
+    "recipe[sudo::default]",
+    // Make sure we have a valid locale setup
+    "recipe[locales::default]",
+    // Block repeated failed login attempts
+    "recipe[fail2ban::default]"
+  ],
+  "chef_type": "role",
+  "override_attributes": {
+  }
+}
+

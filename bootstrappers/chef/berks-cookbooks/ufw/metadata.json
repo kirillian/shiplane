@@ -1,0 +1,45 @@
+{
+  "name": "ufw",
+  "description": "Installs and configures Uncomplicated Firewall (ufw)",
+  "long_description": "# Description\n\n[![Build Status](https://travis-ci.org/chef-cookbooks/ufw.svg?branch=master)](http://travis-ci.org/chef-cookbooks/ufw) [![Cookbook Version](https://img.shields.io/cookbook/v/ufw.svg)](https://supermarket.chef.io/cookbooks/ufw)\n\nConfigures Uncomplicated Firewall (ufw) on Ubuntu and Debian. Including the `ufw` recipe in a run list means the firewall will be enabled and will deny everything except SSH and ICMP ping by default.\n\nRules may be added to the node by adding them to the `['firewall']['rules']` attributes in roles or on the node directly. The `firewall` cookbook has an LWRP that may be used to apply rules directly from other recipes as well. There is no need to explicitly remove rules, they are reevaluated on changes and reset. Rules are applied in the order of the run list, unless ordering is explicitly added.\n\n## Requirements\n\n### Platforms\n\n- Ubuntu\n- Debian\n\n### Chef\n\n- Chef 12.4+\n\n### Cookbooks\n\n- firewall 2.0+\n\n## Recipes\n\n### default\n\nThe `default` recipe looks for the list of firewall rules to apply from the `['firewall']['rules']` attribute added to roles and on the node itself. The list of rules is then applied to the node in the order specified.\n\n### disable\n\nThe `disable` recipe is used if there is a need to disable the existing firewall, perhaps for testing. It disables the ufw firewall even if other ufw recipes attempt to enable it.\n\nIf you remove this recipe, the firewall does not get automatically re-enabled. You will need clear the value of the `['firewall']['state']` to force a recalculation of the firewall rules. This can be done with `knife node edit`.\n\n### databag\n\nThe `databag` recipe looks in the `firewall` data bag for to apply firewall rules based on inspecting the runlist for roles and recipe names for keys that map to the data bag items and are applied in the the order specified.\n\nThe `databag` recipe calls the `default` recipe after the `['firewall']['rules']` attribute is set to apply the rules, so you may mix roles with databag items if you want (roles apply first, then data bag contents).\n\n### recipes\n\nThe `recipes` recipe applies firewall rules based on inspecting the runlist for recipes that have node[\\<recipe\\>]['firewall']['rules'] attributes. These are appended to node['firewall']['rules'] and applied to the node. Cookbooks may define attributes for recipes like so:</recipe>\n\n#### attributes/default.rb for test cookbook\n\n```ruby\ndefault['test']['firewall']['rules'] = [\n  {\"test\"=> {\n      \"port\"=> \"27901\",\n      \"protocol\"=> \"udp\"\n    }\n  }\n]\ndefault['test::awesome']['firewall']['rules'] = [\n   {\"awesome\"=> {\n       \"port\"=> \"99427\",\n       \"protocol\"=> \"udp\"\n     }\n   },\n   {\"awesome2\"=> {\n      \"port\"=> \"99428\"\n     }\n   }\n]\n```\n\nNote that the 'test::awesome' rules are only applied if that specific recipe is in the runlist. Recipe-applied firewall rules are applied after any rules defined in role attributes.\n\n### securitylevel\n\nThe `securitylevel` recipe is used if there are any node['firewall']['securitylevel'] settings that need to be enforced. It is a reference implementation with nothing configured.\n\n## Attributes\n\nRoles and the node may have the `['firewall']['rules']` attribute set. This attribute is a list of hashes, the key will be rule name, the value will be the hash of parameters. Application order is based on run list.\n\n### Example Role\n\n```ruby\nname \"fw_example\"\ndescription \"Firewall rules for Examples\"\noverride_attributes(\n  \"firewall\" => {\n    \"rules\" => [\n      {\"tftp\" => {}},\n      {\"http\" => {\n          \"port\" => \"80\"\n        }\n      },\n      {\"block tomcat from 192.168.1.0/24\" => {\n          \"port\" => \"8080\",\n          \"source\" => \"192.168.1.0/24\",\n          \"action\" => \"deny\"\n        }\n      },\n      {\"Allow access to udp 1.2.3.4 port 5469 from 1.2.3.5 port 5469\" => {\n          \"protocol\" => \"udp\",\n          \"port\" => \"5469\",\n          \"source\" => \"1.2.3.4\",\n          \"destination\" => \"1.2.3.5\",\n          \"dest_port\" => \"5469\"\n        }\n      },\n      {\"allow to tcp ports 8000-8010 from 192.168.1.0/24\" => {\n          \"port_range\" => \"8000..8010\",\n          \"source\" => \"192.168.1.0/24\",\n          \"protocol\" => \"tcp\" //protocol is mandatory when using port ranges\n        }\n      }\n    ]\n  }\n  )\n```\n\n* default['firewall']['allow_ssh'] Opens port 22 for SSH when set to true. Default set to true.\n\n## Data Bags\n\nThe `firewall` data bag may be used with the `databag` recipe. It will contain items that map to role names (eg. the 'apache' role will map to the 'apache' item in the 'firewall' data bag). Either roles or recipes may be keys (role[webserver] is 'webserver', recipe[apache2] is 'apache2'). If you have recipe-specific firewall rules, you will need to replace the '::' with '**' (double underscores) (eg. recipe[apache2::mod_ssl] is 'apache2**mod_ssl' in the data bag item).\n\nThe items in the data bag will contain a 'rules' array of hashes to apply to the `['firewall']['rules']` attribute.\n\n```shell\n% knife data bag create firewall\n% knife data bag from file firewall examples/data_bags/firewall/apache2.json\n% knife data bag from file firewall examples/data_bags/firewall/apache2__mod_ssl.json\n```\n\n### Example 'firewall' data bag item\n\n```javascript\n{\n    \"id\": \"apache2\",\n    \"rules\": [\n        {\"http\": {\n            \"port\": \"80\"\n        }},\n        {\"block http from 192.168.1.0/24\": {\n            \"port\": \"80\",\n            \"source\": \"192.168.1.0/24\",\n            \"action\": \"deny\"\n        }}\n    ]\n}\n```\n\n## Resources/Providers\n\nThe `firewall` cookbook provides the `firewall` and `firewall_rule` LWRPs, for which there is a ufw provider.\n\n## License & Authors\n\n**Author:** Cookbook Engineering Team ([cookbooks@chef.io](mailto:cookbooks@chef.io))\n\n**Copyright:** 2011-2014, Chef Software, Inc.\n\n```\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n```\n",
+  "maintainer": "Chef Software, Inc.",
+  "maintainer_email": "cookbooks@chef.io",
+  "license": "Apache-2.0",
+  "platforms": {
+    "ubuntu": ">= 0.0.0"
+  },
+  "dependencies": {
+    "firewall": ">= 2.0.0"
+  },
+  "recommendations": {
+  },
+  "suggestions": {
+  },
+  "conflicting": {
+  },
+  "providing": {
+  },
+  "replacing": {
+  },
+  "attributes": {
+  },
+  "groupings": {
+  },
+  "recipes": {
+  },
+  "version": "3.2.1",
+  "source_url": "https://github.com/chef-cookbooks/ufw",
+  "issues_url": "https://github.com/chef-cookbooks/ufw/issues",
+  "privacy": false,
+  "chef_versions": [
+    [
+      ">= 12.4"
+    ]
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ]
+}

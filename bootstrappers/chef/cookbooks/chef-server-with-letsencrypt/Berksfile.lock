@@ -1,0 +1,13 @@
+DEPENDENCIES
+  chef-server-with-letsencrypt
+    path: .
+    metadata: true
+
+GRAPH
+  chef-ingredient (2.3.0)
+  chef-server (5.5.1)
+    chef-ingredient (>= 2.1.10)
+  chef-server-with-letsencrypt (4.0.0)
+    chef-server (>= 0.0.0)
+    cron (>= 0.0.0)
+  cron (6.1.1)

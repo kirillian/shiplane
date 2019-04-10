@@ -1,0 +1,8 @@
+name             'barebones-docker'
+maintainer       'John Epperson'
+maintainer_email 'john.epperson@rockagile.io'
+license          'All rights reserved'
+description      'Adds and configures docker'
+long_description 'Adds and configures docker'
+version          '0.1.0'
+depends          'docker', '>= 4.0.0'

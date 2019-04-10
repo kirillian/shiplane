@@ -1,0 +1,35 @@
+driver:
+  name: vagrant
+  vm_hostname: <%= require 'socket'; Socket.gethostname %>.virtkick-chef.kitchen.ci
+
+provisioner:
+  name: chef_zero
+  always_update_cookbooks: true
+
+platforms:
+- name: ubuntu-16.04
+
+verifier:
+  name: inspec
+
+suites:
+- name: default
+  attributes:
+    chef-server:
+      accept_license: true
+      api_fqdn: <%= ENV['FQDN'] || raise('No FQDN provided') %>
+      topology: standalone
+      version: 12.17.5
+    chef-server-with-letsencrypt:
+      lego_email: <%= ENV['LEGO_EMAIL'] || raise('No LEGO_EMAIL provided') %>
+      lego_params: --dns dnsimple --dns-timeout 30
+      lego_env:
+        DNSIMPLE_EMAIL: <%= ENV['DNSIMPLE_EMAIL'] || raise('No DNSIMPLE_EMAIL provided') %>
+        DNSIMPLE_OAUTH_TOKEN: <%= ENV['DNSIMPLE_OAUTH_TOKEN'] || raise('No NSIMPLE_OAUTH_TOKEN provided') %> # https://dnsimple.com/a/ACCOUNTID/account/access_tokens
+      renew_with_cron: false # crontab binary not present in our Docker image
+      install_chef_server: false # chef_ingredient[chef-server] won't detect the platform - our Docker image is minimal
+  run_list:
+  - recipe[chef-server-with-letsencrypt]
+  verifier:
+    inspec_tests:
+    - test/integration/inspec

@@ -1,0 +1,16 @@
+{
+  "name": "docker-server",
+  "description": "Something which needs docker installed.",
+  "default_attributes": {
+  },
+  "json_class": "Chef::Role",
+  "run_list": [
+    "recipe[n2docker::default]"
+  ],
+  "chef_type": "role",
+  "override_attributes": {
+    "n2docker": {
+      "version": "18.03.1"
+    }
+  }
+}

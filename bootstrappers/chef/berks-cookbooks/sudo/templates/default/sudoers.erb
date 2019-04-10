@@ -1,0 +1,44 @@
+# This file is managed by Chef.
+# Do NOT modify this file directly.
+
+<% @sudoers_defaults.each do |defaults| -%>
+Defaults      <%= defaults %>
+<% end -%>
+<% if @agent_forwarding.to_s == 'true' -%>
+Defaults      env_keep+=SSH_AUTH_SOCK
+<% end -%>
+<% @env_keep_add.each do |env_keep| -%>
+Defaults    env_keep += "<%= env_keep %>"
+<% end -%>
+<% @env_keep_subtract.each do |env_keep| -%>
+Defaults    env_keep -= "<%= env_keep %>"
+<% end -%>
+
+# User privilege specification
+root          ALL=(ALL) ALL
+
+<% @custom_commands_users.each do |commands| -%>
+# Privileges for specific command <%= commands[:command_list].join(', ') %> for user <%= commands[:user] %>
+<%= commands[:user] %> ALL = <%= "NOPASSWD:" if commands[:passwordless].to_s == 'true' %><%= "SETENV:" if @setenv %> <%= commands[:command_list].join(', ') %>
+<% end -%>
+
+<% @custom_commands_groups.each do |commands| -%>
+# Privileges for specific command <%= commands[:command_list].join(', ') %> for group <%= commands[:group] %>
+%<%= commands[:group] %> ALL = <%= "NOPASSWD:" if commands[:passwordless].to_s == 'true' %><%= "SETENV:" if @setenv %> <%= commands[:command_list].join(', ') %>
+<% end -%>
+
+<% @command_aliases.each do |a| -%>
+Cmnd_Alias <%= a[:name].upcase %> = <%= a[:command_list].join(', ') %>
+<% end -%>
+
+<% @sudoers_users.each do |user| -%>
+<%= user %> ALL=(ALL) <%= "NOPASSWD:" if @passwordless.to_s == 'true' %><%= "SETENV:" if @setenv.to_s == 'true' %>ALL
+<% end -%>
+
+<% @sudoers_groups.each do |group| -%>
+# Members of the group '<%= group %>' may gain root privileges
+%<%= group %> ALL=(ALL) <%= "NOPASSWD:" if @passwordless.to_s == 'true' %><%= "SETENV:" if @setenv.to_s == 'true' %>ALL
+<% end -%>
+
+# This is not a comment; see sudoers(5) for more information on "#include" directives
+<%= "#includedir #{@config_prefix}/sudoers.d" if @include_sudoers_d.to_s == 'true'  %>

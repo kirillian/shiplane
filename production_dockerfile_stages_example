@@ -1,0 +1,44 @@
+# Build Production Intermediate Image
+FROM base as production-intermediate
+
+COPY --from=intermediate $APP_PATH $APP_PATH
+COPY . $APP_PATH
+
+WORKDIR $APP_PATH
+
+ARG GITHUB_TOKEN
+ENV GITHUB_TOKEN $GITHUB_TOKEN
+ENV SHIPLANE building
+ENV RAILS_ENV production
+
+RUN mkdir .git && \
+  touch .git/config
+
+RUN git config --global url."https://$GITHUB_TOKEN:@github.com/".insteadOf "https://github.com/"
+RUN git config --global --add url."https://$GITHUB_TOKEN:@github.com/".insteadOf "ssh://git@github.com/"
+
+RUN bundle install --deployment --jobs=4 --without development test
+
+RUN yarn install --production
+
+RUN rm -rf node_modules/n2-styles/test/
+
+RUN bundle exec rake assets:precompile
+
+RUN sed -i "s/${GITHUB_TOKEN}//" Gemfile.lock
+
+
+# Build Production Image
+FROM base as production
+
+COPY --from=production-intermediate $APP_PATH $APP_PATH
+
+WORKDIR $APP_PATH
+
+RUN bundle config --local path vendor/bundle
+RUN bundle config --local without development:test:assets
+
+ENV RAILS_ENV production
+ENV SHIPLANE running
+ENV RAILS_LOG_TO_STDOUT true
+ENV RAILS_SERVE_STATIC_FILES true

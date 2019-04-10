@@ -1,0 +1,9 @@
+solo true
+log_level :info
+json_attribs "/var/chef/nodes/<%= host.properties.node %>.json"
+node_name "<%= host.properties.node %>"
+cookbook_path   ["/var/chef/cookbooks"]
+data_bag_path   "/var/chef/data_bags"
+role_path       "/var/chef/roles"
+environment_path "/var/chef/environments"
+environment "<%= ENV['ENVIRONMENT'] %>"

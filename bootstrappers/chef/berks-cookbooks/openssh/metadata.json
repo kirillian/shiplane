@@ -1,0 +1,61 @@
+{
+  "name": "openssh",
+  "description": "Installs and configures OpenSSH client and daemon",
+  "long_description": "# openssh Cookbook\n\n[![Build Status](https://travis-ci.org/chef-cookbooks/openssh.svg?branch=master)](https://travis-ci.org/chef-cookbooks/openssh) [![Cookbook Version](https://img.shields.io/cookbook/v/openssh.svg)](https://supermarket.chef.io/cookbooks/openssh)\n\nInstalls and configures OpenSSH client and daemon.\n\n## Requirements\n\n### Platforms\n\n- Debian/Ubuntu\n- RHEL/CentOS/Scientific/Oracle\n- Fedora\n- FreeBSD\n- Suse Enterprise Linux\n- openSUSE / openSUSE leap\n- AIX 7.1\n\n### Chef\n\n- Chef 12.1+\n\n### Cookbooks\n\n- iptables\n\n## Recipes\n\n### default\n\nInstalls openssh packages, manages the sshd config file, configure trusted ca keys, configure revoked keys, and starts/enables the sshd service.\n\n### iptables\n\nCreates an iptables firewall rule to allow inbound SSH connections.\n\n## Usage\n\nApply the default recipe to the node's run_list to ensure that the openssh packages are installed, sshd is configured, and the service is started and enabled\n\n## Attributes List\n\nThe attributes list is dynamically generated, and lines up with the default openssh configs.\n\nThis means anything located in [sshd_config](http://www.openbsd.org/cgi-bin/man.cgi?query=sshd_config&sektion=5) or [ssh_config](http://www.openbsd.org/cgi-bin/man.cgi?query=sshd_config&sektion=5) can be used in your node attributes.\n\n- If the option can be entered more then once, use an _Array_, otherwise, use a _String_. If the option is host-specific use a `Hash` (please see below for more details).\n- Each attribute is stored as ruby case, and converted to camel case for the config file on the fly.\n- The current default attributes match the stock `ssh_config` and `sshd_config` provided by openssh.\n- The namespace for `sshd_config` is `node['openssh']['server']`.\n- Likewise, the namespace for `ssh_config` is `node['openssh']['client']`.\n- An attribute can be an `Array`, a `Hash` or a `String`.\n- If it is an `Array`, each item in the array will get it's own line in the config file.\n- `Hash` attributes are meant to used with `ssh_config` namespace to create host-specific configurations. The keys of the `Hash` will be used as the `Host` entries and their associated entries as the configuration values.\n- All the values in openssh are commented out in the `attributes/default.rb` file for a base starting point.\n- There is one special attribute name, which is `match`. This is not included in the default template like the others. `node['openssh']['server']['match']` must be a Hash, where the key is the match pattern criteria and the value should be a Hash of normal keywords and values. The same transformations listed above apply to these keywords. See examples below.\n\n## Dynamic ListenAddress\n\nPass in a `Hash` of interface names, and IP address type(s) to bind sshd to. This will expand to a list of IP addresses which override the default `node['openssh']['server']['listen_address']` value.\n\n## Examples and Common usage\n\nThese can be mixed and matched in roles and attributes.  Please note, it is possible to get sshd into a state that it will not run.  If this is the case, you will need to login via an alternate method and debug sshd like normal.\n\n### No Password logins\n\nThis requires use of identity files to connect\n\n```json\n\"openssh\": {\n  \"server\": {\n    \"password_authentication\": \"no\"\n  }\n}\n```\n\n### Change sshd Port\n\n```json\n\"openssh\": {\n  \"server\": {\n    \"port\": \"14188\"\n  }\n}\n```\n\n### Match\n\n```json\n\"openssh\": {\n  \"server\": {\n    \"match\": {\n      \"Address 192.168.1.0/24\": {\n        \"password_authentication\": \"yes\"\n      },\n      \"Group admins\": {\n        \"permit_tunnel\": \"yes\",\n        \"max_sessions\": \"20\"\n      }\n    }\n  }\n}\n```\n\n### Enable X Forwarding\n\n```json\n\"openssh\": {\n  \"server\": {\n    \"x11_forwarding\": \"yes\"\n  }\n}\n```\n\n### Bind to a specific set of address (this example actually binds to all).\n\nNot to be used with `node['openssh']['listen_interfaces']`.\n\n```json\n\"openssh\": {\n  \"server\": {\n    \"address_family\": \"any\",\n      \"listen_address\": [ \"192.168.0.1\", \"::\" ]\n    }\n  }\n}\n```\n\n### Bind to the addresses tied to a set of interfaces.\n\n```json\n\"openssh\": {\n  \"listen_interfaces\": {\n    \"eth0\": \"inet\",\n    \"eth1\": \"inet6\"\n  }\n}\n```\n### Configure Trusted User CA Keys.\n\n```json\n\"openssh\": {\n  \"ca_keys\": [\n    \"ssh-rsa key... ca_id_1\",\n    \"ssh-rsa key... ca_id_2\"\n  ]\n}\n```\n\n### Configure Revoked Keys.\n\n```json\n\"openssh\": {\n  \"server\": {\n    \"revoked_keys\": [\n      \"ssh-rsa key... user_key_1\",\n      \"ssh-rsa key... user_key_2\"\n    ]\n  }\n}\n```\n\n### Host-specific configurations with hashes.\n\nYou can use a `Hash` with `node['openssh']['client']` to configure different values for different hosts.\n\n```json\n\"client\": {\n  \"*\": {\n    \"g_s_s_a_p_i_authentication\": \"yes\",\n    \"send_env\": \"LANG LC_*\",\n    \"hash_known_hosts\": \"yes\"\n  },\n  \"localhost\": {\n    \"user_known_hosts_file\": \"/dev/null\",\n    \"strict_host_key_checking\": \"no\"\n  },\n  \"127.0.0.1\": {\n    \"user_known_hosts_file\": \"/dev/null\",\n    \"strict_host_key_checking\": \"no\"\n  },\n  \"other*\": {\n    \"user_known_hosts_file\": \"/dev/null\",\n    \"strict_host_key_checking\": \"no\"\n  }\n}\n```\n\nThe keys are used as values with the `Host` entries. So, the configuration fragment shown above generates:\n\n```text\nHost *\nSendEnv LANG LC_*\nHashKnownHosts yes\nGSSAPIAuthentication yes\nHost localhost\nStrictHostKeyChecking no\nUserKnownHostsFile /dev/null\nHost 127.0.0.1\nStrictHostKeyChecking no\nUserKnownHostsFile /dev/null\nHost other*\nStrictHostKeyChecking no\nUserKnownHostsFile /dev/null\n```\n\n### SSH Subsystems\n\nConfigure multiple SSH subsystems (e.g. sftp, netconf):\n\n```json\n\"openssh\": {\n  \"server\": {\n    \"subsystem\": {\n      \"sftp\": \"/usr/lib/openssh/sftp-server\",\n      \"appX\": \"/usr/sbin/appX\"\n    } \n  }\n}\n```\n\nFormer declaration of single subsystem:\n \n```json\n\"openssh\": {\n  \"server\": {\n    \"subsystem\": \"sftp /usr/lib/openssh/sftp-server\"\n  }\n}\n```\n\n## License & Authors\n\n**Author:** Cookbook Engineering Team ([cookbooks@chef.io](mailto:cookbooks@chef.io))\n\n**Copyright:** 2008-2016, Chef Software, Inc.\n\n```\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n```\n",
+  "maintainer": "Chef Software, Inc.",
+  "maintainer_email": "cookbooks@chef.io",
+  "license": "Apache-2.0",
+  "platforms": {
+    "aix": ">= 0.0.0",
+    "amazon": ">= 0.0.0",
+    "arch": ">= 0.0.0",
+    "centos": ">= 0.0.0",
+    "fedora": ">= 0.0.0",
+    "freebsd": ">= 0.0.0",
+    "opensuse": ">= 0.0.0",
+    "opensuseleap": ">= 0.0.0",
+    "oracle": ">= 0.0.0",
+    "redhat": ">= 0.0.0",
+    "scientific": ">= 0.0.0",
+    "smartos": ">= 0.0.0",
+    "suse": ">= 0.0.0",
+    "ubuntu": ">= 0.0.0",
+    "zlinux": ">= 0.0.0"
+  },
+  "dependencies": {
+    "iptables": ">= 1.0.0"
+  },
+  "recommendations": {
+  },
+  "suggestions": {
+  },
+  "conflicting": {
+  },
+  "providing": {
+  },
+  "replacing": {
+  },
+  "attributes": {
+  },
+  "groupings": {
+  },
+  "recipes": {
+    "openssh": "Installs openssh",
+    "openssh::iptables": "Set up iptables to allow SSH inbound"
+  },
+  "version": "2.7.1",
+  "source_url": "https://github.com/chef-cookbooks/openssh",
+  "issues_url": "https://github.com/chef-cookbooks/openssh/issues",
+  "privacy": false,
+  "chef_versions": [
+    [
+      ">= 12.1"
+    ]
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ]
+}

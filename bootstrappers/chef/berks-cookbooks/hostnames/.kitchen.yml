@@ -1,0 +1,33 @@
+---
+driver_plugin: vagrant
+driver_config:
+  require_chef_omnibus: true
+
+provisioner:
+    name: chef_zero
+
+platforms:
+  - name: ubuntu-12.04
+  - name: ubuntu-14.04
+  - name: ubuntu-16.04
+  - name: debian-7.11
+  - name: debian-8.5
+  - name: centos-6.8
+  - name: centos-7.2
+  - name: fedora-24
+  - name: freebsd-10.3
+
+suites:
+  - name: default
+    run_list:
+      - recipe[hostnames::default]
+    attributes:
+      set_fqdn: test.example.com
+  - name: wildcard
+    run_list:
+      - recipe[hostnames::default]
+    provisioner:
+      solo_rb:
+        node_name: test
+    attributes:
+      set_fqdn: '*.example.com'

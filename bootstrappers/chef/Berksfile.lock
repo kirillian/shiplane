@@ -1,0 +1,74 @@
+DEPENDENCIES
+  apt
+    git: https://github.com/opscode-cookbooks/apt.git
+    revision: eabf84d7769b7c323e76f56f85436612bfde9eb0
+  build-essential
+    git: https://github.com/opscode-cookbooks/build-essential.git
+    revision: fb4d6d693152e691cedcbd01f5497dbe2e19fa0d
+  chef-server-with-letsencrypt (~> 4.0.0)
+  cmake (~> 0.3.0)
+  docker (~> 4.9.0)
+  environment_variables
+    git: https://github.com/room118solutions/chef-environment-variables.git
+    revision: b72ddc7f3f1f796372c355eb85ec996897c09496
+  fail2ban
+    git: https://github.com/opscode-cookbooks/fail2ban.git
+    revision: 238bfc5c7072c87c818622f88fd4e04905adf7ab
+  hostnames
+    git: https://github.com/nathantsoi/chef-cookbook-hostname.git
+    revision: 447f8ad3757b8028d20b5b58ee41e288ad9261cf
+  locales
+    git: https://github.com/phbergsmann/chef-locales.git
+    revision: 5ad79628e627a66edf028fe55fa7c92d26687cf0
+  ntp
+    git: https://github.com/gmiranda23/ntp.git
+    revision: 8576721980793177a49e82725f7974fb8c621ab9
+  openssh
+    git: https://github.com/opscode-cookbooks/openssh.git
+    revision: 86f210f785189422e9ef644b3f1015e84e31df2e
+  openssl (~> 6.0.0)
+  sudo
+    git: https://github.com/opscode-cookbooks/sudo.git
+    revision: 5ed190d5d49563ec25461b4eb50efa9dfc441f40
+  ufw
+    git: https://github.com/opscode-cookbooks/ufw.git
+    revision: e887e61a5f7830aeff1a4a1c971c873cd9b51a9d
+
+GRAPH
+  apt (7.1.1)
+  build-essential (8.2.1)
+    mingw (>= 1.1.0)
+    seven_zip (>= 0.0.0)
+  chef-ingredient (3.1.1)
+  chef-server (5.5.2)
+    chef-ingredient (>= 2.1.10)
+  chef-server-with-letsencrypt (4.0.0)
+    chef-server (>= 0.0.0)
+    cron (>= 0.0.0)
+  chef-sugar (5.0.0)
+  cmake (0.3.0)
+  cron (6.2.1)
+  docker (4.9.0)
+  environment_variables (0.1.0)
+  fail2ban (5.0.2)
+    yum-epel (>= 0.0.0)
+  firewall (2.7.0)
+    chef-sugar (>= 0.0.0)
+  hostnames (0.4.2)
+    hostsfile (>= 0.0.0)
+  hostsfile (3.0.1)
+  iptables (4.5.0)
+  locales (0.3.1)
+  mingw (2.1.0)
+    seven_zip (>= 0.0.0)
+  ntp (3.6.1)
+  openssh (2.7.1)
+    iptables (>= 1.0.0)
+  openssl (6.0.0)
+  seven_zip (3.1.0)
+    windows (>= 0.0.0)
+  sudo (5.4.4)
+  ufw (3.2.1)
+    firewall (>= 2.0.0)
+  windows (5.2.2)
+  yum-epel (3.3.0)

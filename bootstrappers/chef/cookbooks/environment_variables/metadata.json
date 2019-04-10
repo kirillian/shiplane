@@ -1,0 +1,41 @@
+{
+  "name": "environment_variables",
+  "description": "Defines environment variables in /etc/environment",
+  "long_description": "environment_variables Cookbook\n===================\nThis cookbook handles the application specific setup.\n\nRequirements\n------------\n#### cookbooks\n- `default` - sets environment variables in /etc/environment from an attributes hash\n\nUsage\n-----\n#### environment_variables\nJust include `environment_variables` in your node's `run_list`:\n\n```json\n{\n  \"name\":\"my_node\",\n  \"run_list\": [\n    \"recipe[environment_variables]\"\n  ]\n}\n```\n\nThen create entries in an attribute named `environment_variables`:\n```json\n{\n  \"environment_variables\": {\n    \"RAILS_ENV\": \"production\",\n    \"S3_API_KEY\": \"foobar\",\n    \"STRIPE_API_KEY\": \"baz\"\n  }\n}\n```\n\nLicense and Authors\n-------------------\nAuthors: [Chris Gunther](chris@room118solutions.com)\n",
+  "maintainer": "Room 118 Solutions",
+  "maintainer_email": "chris@room118solutions.com",
+  "license": "All rights reserved",
+  "platforms": {
+  },
+  "dependencies": {
+  },
+  "recommendations": {
+  },
+  "suggestions": {
+  },
+  "conflicting": {
+  },
+  "providing": {
+  },
+  "replacing": {
+  },
+  "attributes": {
+  },
+  "groupings": {
+  },
+  "recipes": {
+  },
+  "version": "0.1.0",
+  "source_url": "",
+  "issues_url": "",
+  "privacy": false,
+  "chef_versions": [
+
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ]
+}

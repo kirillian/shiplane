@@ -1,0 +1,56 @@
+{
+  "name": "fail2ban",
+  "description": "Installs and configures fail2ban",
+  "long_description": "# fail2ban Cookbook\n\n[![Build Status](https://travis-ci.org/chef-cookbooks/fail2ban.svg?branch=master)](https://travis-ci.org/chef-cookbooks/fail2ban) [![Cookbook Version](https://img.shields.io/cookbook/v/fail2ban.svg)](https://supermarket.chef.io/cookbooks/fail2ban)\n\nInstalls and configures `fail2ban`, a utility that watches logs for failed login attempts and blocks repeat offenders with firewall rules. On Redhat systems this cookbook will enable the EPEL repository in order to retrieve the fail2ban package.\n\n## Requirements\n\n### Platforms\n\n- Debian/Ubuntu\n- RHEL/CentOS/Scientific/Amazon/Oracle\n- Fedora\n- OpenSUSE\n\n### Chef\n- Chef 13.0+\n\n### Cookbooks\n\n- yum-epel\n\n## Recipes\n\n### default\n\nInstalls the fail2ban package, manages 2 templates: `/etc/fail2ban/fail2ban.conf` and `/etc/fail2ban/jail.conf`, and manages the fail2ban service.\n\n## Attributes\n\nThis cookbook has a set of configuration options for fail2ban\n\n- default['fail2ban']['loglevel'] = 'INFO'\n- default['fail2ban']['logtarget'] = '/var/log/fail2ban.log'\n- default['fail2ban']['syslogsocket'] = 'auto'\n- default['fail2ban']['socket'] = '/var/run/fail2ban/fail2ban.sock'\n- default['fail2ban']['pidfile'] = '/var/run/fail2ban/fail2ban.pid'\n- default['fail2ban']['dbfile'] = '/var/lib/fail2ban/fail2ban.sqlite3'\n- default['fail2ban']['dbpurgeage'] = 86_400\n\nThe `CRITICAL` and `NOTICE` log levels are only available on fail2ban >= 0.9.x. If they are used on a system with an older version of fail2ban, they will be mapped to `ERROR` and `INFO` respectively.\n\nThe `syslogsocket`, `dbfile`, and `dbpurgeage` options are only applicable to fail2ban >= 0.9.x\n\n\nThis cookbook has a set of configuration options for jail.conf\n\n- default['fail2ban']['ignoreip'] = '127.0.0.1/8'\n- default['fail2ban']['findtime'] = 600\n- default['fail2ban']['bantime'] = 300\n- default['fail2ban']['maxretry'] = 5\n- default['fail2ban']['backend'] = 'polling'\n- default['fail2ban']['email'] = 'root@localhost'\n- default['fail2ban']['sendername'] = 'Fail2Ban'\n- default['fail2ban']['action'] = 'action_'\n- default['fail2ban']['banaction'] = 'iptables-multiport'\n- default['fail2ban']['mta'] = 'sendmail'\n- default['fail2ban']['protocol'] = 'tcp'\n- default['fail2ban']['chain'] = 'INPUT'\n\nThis cookbook makes use of a hash to compile the jail.local-file and filter config files:\n\n```\ndefault['fail2ban']['services'] = {\n  'ssh' => {\n        \"enabled\" => \"true\",\n        \"port\" => \"ssh\",\n        \"filter\" => \"sshd\",\n        \"logpath\" => node['fail2ban']['auth_log'],\n        \"maxretry\" => \"6\"\n     },\n  'smtp' => {\n        \"enabled\" => \"true\",\n        \"port\" => \"smtp\",\n        \"filter\" => \"smtp\",\n        \"logpath\" => node['fail2ban']['auth_log'],\n        \"maxretry\" => \"6\"\n     }\n}\n```\n\nThe following attributes can be used per service:\n\n- enabled\n- port\n- filter\n- logpath\n- maxretry\n- protocol\n- banaction\n- bantime\n\nCreating custom fail2ban filters:\n\n```\ndefault['fail2ban']['filters'] = {\n  'nginx-proxy' => {\n        \"failregex\" => [\"^<HOST> -.*GET http.*\"],\n        \"ignoreregex\" => []\n     },\n}\n```\n\nIssues related to rsyslog\n==========================\n\nIf you are using rsyslog parameter \"$RepeatedMsgReduction on\" in rsyslog.conf file\nthen you can get \"Last message repeated N times\" in system log file (for example auth.log).\nFail2ban will not work because the internal counter maxretry will not expand the repeated messages.\nChange parameter \"$RepeatedMsgReduction off\" in rsyslog.conf file for maximum accuracy of failed login attempts.\n\nThis rsyslog parameter is default ON for ubuntu 12.04 LTS for example.\n\n## License and Author\n\n```\nAuthor:: Joshua Timberman (<joshua@chef.io>)\n\nCopyright:: 2009-2016, Chef Software, Inc\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n```\n",
+  "maintainer": "Chef Software, Inc.",
+  "maintainer_email": "cookbooks@chef.io",
+  "license": "Apache-2.0",
+  "platforms": {
+    "amazon": ">= 0.0.0",
+    "centos": ">= 0.0.0",
+    "debian": ">= 0.0.0",
+    "fedora": ">= 0.0.0",
+    "oracle": ">= 0.0.0",
+    "redhat": ">= 0.0.0",
+    "scientific": ">= 0.0.0",
+    "ubuntu": ">= 0.0.0",
+    "suse": ">= 0.0.0",
+    "opensuse": ">= 0.0.0",
+    "opensuseleap": ">= 0.0.0"
+  },
+  "dependencies": {
+    "yum-epel": ">= 0.0.0"
+  },
+  "recommendations": {
+  },
+  "suggestions": {
+  },
+  "conflicting": {
+  },
+  "providing": {
+  },
+  "replacing": {
+  },
+  "attributes": {
+  },
+  "groupings": {
+  },
+  "recipes": {
+    "default": "Installs and configures fail2ban"
+  },
+  "version": "5.0.2",
+  "source_url": "https://github.com/chef-cookbooks/fail2ban",
+  "issues_url": "https://github.com/chef-cookbooks/fail2ban/issues",
+  "privacy": false,
+  "chef_versions": [
+    [
+      ">= 13.0"
+    ]
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+
+  ]
+}
