@@ -1,5 +1,5 @@
 project:
-  appname: <%= appname %>
+  appname: <%= app_name %>
   version_control: git
   # The origin url on Github
   # origin: username/repo_title
@@ -16,8 +16,8 @@ build:
 # Define the artifacts that you want built here
   artifacts:
     container-name:
-      tag: <%= appname %>-base:latest
-      repo: kirillian2/<%= appname %>
+      tag: <%= app_name %>-base:latest
+      repo: kirillian2/<%= app_name %>
       ports:
         - "3000:3000"
   compose:

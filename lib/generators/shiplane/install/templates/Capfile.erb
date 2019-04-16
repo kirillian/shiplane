@@ -1,0 +1,13 @@
+# Load DSL and set up stages
+require 'capistrano/setup'
+require 'capistrano/framework'
+
+require 'capistrano/ssh_doctor'
+require "airbrussh/capistrano"
+
+<% gems.each do |gem| -%>
+require 'capistrano/<%= gem %>'
+<% end -%>
+
+# Load custom tasks from `lib/capistrano/tasks` if you have any defined
+Dir.glob('lib/capistrano/tasks/**/*.rake').each { |r| import r }

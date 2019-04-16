@@ -20,7 +20,6 @@ Gem::Specification.new do |spec|
   end
 
   spec.files << "README.md"
-  spec.files << "production_dockerfile_stages_example"
 
   spec.require_paths = ["lib"]
 

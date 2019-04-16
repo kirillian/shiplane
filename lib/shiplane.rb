@@ -1,4 +1,5 @@
 require 'yaml'
+require 'shiplane/railtie' if defined? Rails
 
 require_relative 'shiplane/build'
 
