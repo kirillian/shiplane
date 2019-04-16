@@ -7,3 +7,5 @@
 # Ignore bundler config.
 /.bundle
 /pkg
+/bootstrappers/chef/pkg
+/deployers/capistrano_docker/pkg
