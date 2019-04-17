@@ -85,13 +85,13 @@ This step is closely related to provisioning and is currently tied in with provi
 During bootstrapping, Shiplane ssh's into the deployment target you have designated for provisioning and installs the bare minimum necessary software to allow provisioning.
 
 Currently the following Bootstrappers are provided:
-- shiplane_bootstrappers_chef # Installs Chef and uploads cookbooks for the provisioner
+- shiplane_bootstrappers_chef `# Installs Chef and uploads cookbooks for the provisioner`
 
 #### Provisioning
 During Provisioning Shiplane installs all the software necessary to run the selected deployment framework on the deployment target.
 
 Currently, the following Provisioners are provided:
-- shiplane_bootstrappers_chef # Uses Chef Solo to install deployment frameworks
+- shiplane_bootstrappers_chef `# Uses Chef Solo to install deployment frameworks`
 
 You can bootstrap AND provision at once by running the following:
 ```sh
@@ -110,6 +110,10 @@ bundle exec cap production shiplane
 
 #### Deploying
 Shiplane provides tasks to help you deploy your code. These tasks depend on your deployment framework, but each task appropriately launches your docker containers on your selected framework.
+
+Currently, the following Deployers are provided:
+- shiplane_deployers_capistrano_docker `# Uses Capistrano and Raw Docker to run your containers`
+
 
 You can run a deployment like so:
 ```sh
