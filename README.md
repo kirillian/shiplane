@@ -70,4 +70,48 @@ rake shiplane:install[<application_name>]
 ```
 
 ### Using Shiplane
-#### TODO
+#### Steps involved in provisioning and deploying
+Currently, Shiplane assumes you have an empty VM/VPS/Metal Box with some form of linux on it (though testing has primarily been done on Ubuntu boxes). Shiplane assumes an otherwise EMPTY install. It is HIGHLY recommended that you NOT use Shiplane (or any other provisioning) on an install with software other than a basic OS installed.
+
+Each of the following steps are handled in Shiplane:
+- Bootstrapping
+- Provisioning
+- Building
+- Deploying
+
+#### Bootstrapping
+This step is closely related to provisioning and is currently tied in with provisioning itself, but the concept remains a separate entity and may be separated from provisioning sometime in the future.
+
+During bootstrapping, Shiplane ssh's into the deployment target you have designated for provisioning and installs the bare minimum necessary software to allow provisioning.
+
+Currently the following Bootstrappers are provided:
+- shiplane_bootstrappers_chef # Installs Chef and uploads cookbooks for the provisioner
+
+#### Provisioning
+During Provisioning Shiplane installs all the software necessary to run the selected deployment framework on the deployment target.
+
+Currently, the following Provisioners are provided:
+- shiplane_bootstrappers_chef # Uses Chef Solo to install deployment frameworks
+
+You can bootstrap AND provision at once by running the following:
+```sh
+bundle exec cap production shiplane:bootstrap
+```
+
+#### Building
+Shiplane provides rake tasks that may be used to build your Docker containers into Production-ready containers and upload the images to a registry for download on your target deployment machine. Currently, Shiplane supports Dockerhub out of the box.
+
+It is intended that this be integrated into your CI pipeline and some examples are provided (Currently, we provide an example for Circle CI).
+
+You can build a docker container based on the HEAD of your current branch like so:
+```sh
+bundle exec cap production shiplane
+```
+
+#### Deploying
+Shiplane provides tasks to help you deploy your code. These tasks depend on your deployment framework, but each task appropriately launches your docker containers on your selected framework.
+
+You can run a deployment like so:
+```sh
+bundle exec cap production deploy
+```
