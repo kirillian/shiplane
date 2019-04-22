@@ -45,9 +45,9 @@ ruby '2.6.2'
 
 3. Add the following lines to your Gemfile:
 ```
-gem 'shiplane', require: false
-gem 'shiplane_bootstrappers_chef', require: false
-gem 'shiplane_deployers_capistrano_docker', require: false
+gem 'shiplane'
+gem 'shiplane_bootstrappers_chef'
+gem 'shiplane_deployers_capistrano_docker'
 ```
 
 4. Run bundler to install everything:
