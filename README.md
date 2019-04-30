@@ -1,4 +1,4 @@
-[[assets/shiplane_logo.jpg|alt=Shiplane]]
+![Shiplane](assets/shiplane_logo.jpg)
 
 # Shiplane
 Convert your development docker-compose yaml files into production-ready docker deployments
