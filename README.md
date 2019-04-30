@@ -1,6 +1,5 @@
 ![Shiplane](assets/shiplane_logo.jpg)
 
-# Shiplane
 Convert your development docker-compose yaml files into production-ready docker deployments
 
 ## The Mission
