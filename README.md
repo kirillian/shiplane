@@ -1,7 +1,10 @@
+[[assets/shiplane_logo.jpg|alt=Shiplane]]
+
 # Shiplane
 Convert your development docker-compose yaml files into production-ready docker deployments
 
 ## The Mission
+
 ### Empower Developers
 Shiplane is about empowering developers to get more done, in less time, with less effort. It is intended to amplify a developer's skills and efforts for little cost. It shouldn't take hours and days to setup a working Shiplane environment. It should take minutes to get a working, sane, and relatively secure solution out of the box. Once working, everything should be tweakable as needed.
 
@@ -9,6 +12,7 @@ Shiplane is about empowering developers to get more done, in less time, with les
 Shiplane doesn't care what language you use, what orchestration tool you use, or even what kind of OS you are deploying to or from. Shiplane is merely a well-traveled, sane, and easy to use path through the Docker ecosystem that gets you from having nothing to having a working system.
 
 ## What does Shiplane do for me?
+
 ### Environment Consistency
 Your development compose environment already defines all your application's dependencies, so why should you need to recreate your entire environment just to deploy to production? It not only duplicates work, but increases the likelihood of differences between environments that developers are always attempting to mitigate. Shiplane helps you minimize any differences so that the transition from your local, development Docker environment is just another push of code to your CI.
 
@@ -26,6 +30,7 @@ Shiplane is actually designed to be easy to use early on in the process, scale w
 While Shiplane is language and platform agnostic and you will be able to deploy that Python project or your Java project, it is written in Ruby at this time and therefore requires your machine to have Ruby installed. The instructions for doing so are included below. That's it. That's the only caveat. And, if you are so inclined, I would LOVE to accept PRs to help me create a Shiplane binary or otherwise remove this dependency entirely. There is an issue open [here](https://github.com/kirillian/shiplane/issues/11) to discuss this problem and potential fixes for it.
 
 ## Installation
+
 ### Installing Ruby
 #### TODO
 
@@ -119,3 +124,14 @@ You can run a deployment like so:
 ```sh
 bundle exec cap production deploy
 ```
+
+## Contributing
+
+We highly encourage you to contribute to Shiplane! Check out the [Contribution Guidelines](CONTRIBUTING.md) and help make Shiplane better!
+
+### Security Concerns
+If you have a security concern with Shiplane, please follow our Security Policy guidelines to submit the issue to us.
+
+## License
+
+Shiplane is released under the [MIT License](LICENSE).
