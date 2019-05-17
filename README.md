@@ -124,7 +124,11 @@ You can run a deployment like so:
 bundle exec cap production deploy
 ```
 
-## Contributing
+## Becoming Involved
+### Community Channels
+You can join our [Discord community](https://discord.gg/drrn2YG) to ask any questions you might have or to get ahold of someone in the community who might be able to help you. There is no guarantee of service implied, but we absolutely believe in helping out our fellow developers and will do so as we are able. If you feel you know some stuff about Shiplane, feel free to hang out and please help out as well!
+
+### Contributing
 
 We highly encourage you to contribute to Shiplane! Check out the [Contribution Guidelines](CONTRIBUTING.md) and help make Shiplane better!
 
