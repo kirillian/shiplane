@@ -124,6 +124,12 @@ You can run a deployment like so:
 bundle exec cap production deploy
 ```
 
+#### Troubleshooting
+This is as much a reminder to me as anyone else. If a new version of the gem has just been released and you are trying to pull it, make sure to run the following if bundler fails:
+```
+bundle install --full-index
+```
+
 ## Becoming Involved
 ### Community Channels
 You can join our [Discord community](https://discord.gg/drrn2YG) to ask any questions you might have or to get ahold of someone in the community who might be able to help you. There is no guarantee of service implied, but we absolutely believe in helping out our fellow developers and will do so as we are able. If you feel you know some stuff about Shiplane, feel free to hang out and please help out as well!
