@@ -12,9 +12,17 @@ proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
 proxy_set_header X-Forwarded-Ssl $proxy_x_forwarded_ssl;
 proxy_set_header X-Forwarded-Port $proxy_x_forwarded_port;
 
+# Create longer proxy timeouts for use with slower fastcgi backends
+proxy_connect_timeout       300;
+proxy_send_timeout          300;
+proxy_read_timeout          90m;
+send_timeout                300;
+
 # Mitigate httpoxy attack (see README for details)
 proxy_set_header Proxy "";
 
 # FastCGI buffers
 fastcgi_buffers 16 16k;
 fastcgi_buffer_size 32k;
+
+client_max_body_size        1000m;
