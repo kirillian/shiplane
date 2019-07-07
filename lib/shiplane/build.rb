@@ -19,6 +19,7 @@ module Shiplane
       @postfix = postfix
 
       Dotenv.overload File.join(Dir.pwd, build_config.fetch('environment_file', '.env'))
+      ENV['SHIPLANE_BUILDING'] = 'true'
     end
 
     def appname

@@ -124,10 +124,38 @@ You can run a deployment like so:
 bundle exec cap production deploy
 ```
 
-#### Troubleshooting
+### Troubleshooting
 This is as much a reminder to me as anyone else. If a new version of the gem has just been released and you are trying to pull it, make sure to run the following if bundler fails:
 ```
 bundle install --full-index
+```
+
+##### `Could not load database configuration. No such file - ["config/database.yml"]`
+If you are receiving similar messages during the build process, this likely means that you are running a task during the build (e.g. asset precompilation) that is loading up the Rails initializers and have an initializer that tries to connect to the database. You can fix this by finding which of your initializers is being called. See this snippet here from an app that shows where you would find the offending initializer:
+```
+/var/www/surveyor/vendor/bundle/ruby/2.6.0/gems/zeitwerk-2.1.6/lib/zeitwerk/kernel.rb:23:in `require'
+/var/www/surveyor/vendor/bundle/ruby/2.6.0/gems/activesupport-6.0.0.rc1/lib/active_support/dependencies.rb:302:in `block in require'
+/var/www/surveyor/vendor/bundle/ruby/2.6.0/gems/activesupport-6.0.0.rc1/lib/active_support/dependencies.rb:268:in `load_dependency'
+/var/www/surveyor/vendor/bundle/ruby/2.6.0/gems/activesupport-6.0.0.rc1/lib/active_support/dependencies.rb:302:in `require'
+/var/www/surveyor/config/initializers/public_activity.rb:1:in `<main>'
+/var/www/surveyor/vendor/bundle/ruby/2.6.0/gems/bootsnap-1.4.4/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:54:in `load'
+/var/www/surveyor/vendor/bundle/ruby/2.6.0/gems/bootsnap-1.4.4/lib/bootsnap/load_path_cache/core_ext/kernel_require.rb:54:in `load'
+/var/www/surveyor/vendor/bundle/ruby/2.6.0/gems/activesupport-6.0.0.rc1/lib/active_support/dependencies.rb:296:in `block in load'
+/var/www/surveyor/vendor/bundle/ruby/2.6.0/gems/activesupport-6.0.0.rc1/lib/active_support/dependencies.rb:268:in `load_dependency'
+/var/www/surveyor/vendor/bundle/ruby/2.6.0/gems/activesupport-6.0.0.rc1/lib/active_support/dependencies.rb:296:in `load'
+/var/www/surveyor/vendor/bundle/ruby/2.6.0/gems/railties-6.0.0.rc1/lib/rails/engine.rb:668:in `block in load_config_initializer'
+```
+
+To fix this, wrap the offending code in the initializer with this helper provided by Shiplane:
+```
+require 'shiplane/safe_build'
+
+Shiplane::SafeBuild.wrap do
+  PublicActivity::Activity.class_eval do
+    belongs_to :true_owner, polymorphic: true
+  end
+end
+
 ```
 
 ## Becoming Involved
