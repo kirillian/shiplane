@@ -25,6 +25,10 @@ module Shiplane
         @environment ||= options.fetch(:environment, {})
       end
 
+      def flags
+        @flags ||= options.fetch(:flags, {})
+      end
+
       def container_name
         @container_name ||= "#{env.fetch(:application)}_#{name}_#{env.fetch(:sha)}"
       end
@@ -82,6 +86,7 @@ module Shiplane
           letsencrypt_host ? "-e LETSENCRYPT_HOST=#{letsencrypt_host}" : nil,
           letsencrypt_email ? "-e LETSENCRYPT_EMAIL=#{letsencrypt_email}" : nil,
           environment.map{ |key, value| "-e #{key}=#{value}" },
+          flags.map{ |key, value| "--#{key}=#{value}" },
           image_name,
           startup_command ? startup_command : nil,
         ].flatten.compact.join(" ")
