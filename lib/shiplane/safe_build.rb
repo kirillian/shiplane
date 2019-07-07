@@ -1,7 +1,7 @@
 module Shiplane
   class SafeBuild
     def self.wrap
-      return if ENV['SHIPLANE_BUILDING'] == 'true'
+      return if ENV['SHIPLANE'] == 'running'
       yield
     end
   end
