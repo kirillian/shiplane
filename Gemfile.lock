@@ -1,17 +1,17 @@
 PATH
   remote: .
   specs:
-    shiplane (0.1.4)
+    shiplane (0.1.5)
       dotenv (~> 2.1, >= 2.1.1)
       facets (~> 3.1, >= 3.1.0)
       rake (~> 12.0, >= 12.0.0)
-      shiplane_bootstrappers_chef (= 0.1.4)
-      shiplane_deployers_capistrano_docker (= 0.1.4)
+      shiplane_bootstrappers_chef (= 0.1.5)
+      shiplane_deployers_capistrano_docker (= 0.1.5)
 
 PATH
   remote: bootstrappers/chef
   specs:
-    shiplane_bootstrappers_chef (0.1.4)
+    shiplane_bootstrappers_chef (0.1.5)
       airbrussh (~> 1.1, >= 1.1.1)
       berkshelf (~> 7.0.0, >= 7.0.8)
       capistrano (~> 3.7, >= 3.7.1)
@@ -20,7 +20,7 @@ PATH
 PATH
   remote: deployers/capistrano_docker
   specs:
-    shiplane_deployers_capistrano_docker (0.1.4)
+    shiplane_deployers_capistrano_docker (0.1.5)
       airbrussh (~> 1.1, >= 1.1.1)
       capistrano (~> 3.7, >= 3.7.1)
       capistrano-ssh-doctor (~> 1.0.0, ~> 1.0)
