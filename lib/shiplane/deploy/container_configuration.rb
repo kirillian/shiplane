@@ -21,6 +21,10 @@ module Shiplane
         binding.pry
       end
 
+      def environment
+        @environment ||= options.fetch(:environment, {})
+      end
+
       def container_name
         @container_name ||= "#{env.fetch(:application)}_#{name}_#{env.fetch(:sha)}"
       end
@@ -77,6 +81,7 @@ module Shiplane
           virtual_host ? "-e VIRTUAL_HOST=#{virtual_host}" : nil,
           letsencrypt_host ? "-e LETSENCRYPT_HOST=#{letsencrypt_host}" : nil,
           letsencrypt_email ? "-e LETSENCRYPT_EMAIL=#{letsencrypt_email}" : nil,
+          environment.map{ |key, value| "-e #{key}=#{value}" },
           image_name,
           startup_command ? startup_command : nil,
         ].flatten.compact.join(" ")
