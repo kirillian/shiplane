@@ -4,7 +4,8 @@ namespace :shiplane do
 
   namespace :bootstrap do
     task :default, [:role] do |task, args|
-      hosts = roles(args['role']).map do |host|
+      filter = args.fetch('role', 'all')
+      hosts = roles(filter).map do |host|
         Shiplane::ChefHost.new(host, env)
       end
 
