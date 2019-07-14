@@ -30,7 +30,11 @@ module Shiplane
       end
 
       def container_name
-        @container_name ||= "#{env.fetch(:application)}_#{name}_#{env.fetch(:sha)}"
+        @container_name ||= "#{env.fetch(:application)}_#{name}"
+      end
+
+      def unique_container_name
+        @unique_container_name ||= "#{container_name}_#{env.fetch(:sha)}"
       end
 
       def image_name
@@ -68,7 +72,7 @@ module Shiplane
             "network connect",
             "--alias #{network_alias}",
             network,
-            container_name,
+            unique_container_name,
             "|| true",
           ].flatten.compact.join(" ")
         end
@@ -81,7 +85,7 @@ module Shiplane
           volumes.map{|volume_set| "-v #{volume_set}" },
           published_ports.map{|port| "--expose #{port} -p #{port}" },
           exposed_ports.map{|port| "--expose #{port}" },
-          "--name #{container_name}",
+          "--name #{unique_container_name}",
           virtual_host ? "-e VIRTUAL_HOST=#{virtual_host}" : nil,
           letsencrypt_host ? "-e LETSENCRYPT_HOST=#{letsencrypt_host}" : nil,
           letsencrypt_email ? "-e LETSENCRYPT_EMAIL=#{letsencrypt_email}" : nil,
