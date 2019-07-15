@@ -166,6 +166,8 @@ You can join our [Discord community](https://discord.gg/drrn2YG) to ask any ques
 
 We highly encourage you to contribute to Shiplane! Check out the [Contribution Guidelines](CONTRIBUTING.md) and help make Shiplane better!
 
+Everyone interacting in Shiplane's codebase, issue trackers, and chatroom is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md)
+
 ### Security Concerns
 If you have a security concern with Shiplane, please follow our Security Policy guidelines to submit the issue to us.
 

@@ -2,7 +2,7 @@
 
 We're so glad you want to contribute to [Shiplane](https://github.com/kirillian/shiplane)! If you're unsure about anything, just ask -- or submit the issue or pull request anyway. The worst that can happen is you'll be politely asked to change something. We love all friendly contributions.
 
-We encourage you to read this CONTRIBUTING policy, [LICENSE](LICENSE.md), and [README](README.md).
+We encourage you to read this CONTRIBUTING policy, [CODE_OF_CONDUCT](CODE_OF_CONDUCT.md), [LICENSE](LICENSE.md), and [README](README.md).
 
 ## Submitting PRs or Issues
 
