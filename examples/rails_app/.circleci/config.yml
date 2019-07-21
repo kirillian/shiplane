@@ -1,0 +1,98 @@
+version: 2.1
+
+anchors:
+  - &install_docker
+    name: Install Docker client
+    command: |
+      set -x
+      curl -L -o /tmp/docker-$DOCKER_VERSION.tgz https://download.docker.com/linux/static/stable/x86_64/docker-$DOCKER_VERSION.tgz
+      tar -xz -C /tmp -f /tmp/docker-$DOCKER_VERSION.tgz
+      mv -n /tmp/docker/* /usr/bin
+
+  - &restore_gem_cache
+    keys:
+      - example-gem-cache-{{ checksum "Gemfile.lock" }}
+      - example-gem-cache-
+
+  - &bundle
+    name: Bundle Install
+    command: |
+      bundle config without development
+      bundle check --path=vendor/bundle || bundle install --path=vendor/bundle --jobs 4 --retry 3
+
+  - &save_gem_cache
+    key: example-gem-cache-{{ checksum "Gemfile.lock" }}
+    paths:
+      - vendor/bundle
+
+  - &shiplane_build
+    name: Run Shiplane Build Image
+    command: |
+      cp .env.shiplane .env
+      cp .env.shiplane .env.${TARGET_BUILD_ENVIRONMENT}
+      RAILS_ENV=$TARGET_BUILD_ENVIRONMENT bundle exec cap $TARGET_BUILD_ENVIRONMENT shiplane[$APP_NAME,$SHA]
+    environment:
+      RAISE_EXCEPTIONS_ON_FAILED_BUILD: true
+
+  - &buildbase
+    docker:
+      - image: circleci/ruby:2.6.3
+        environment:
+          DOCKER_VERSION: 18.09.3
+    working_directory: ~/example
+    steps:
+      - checkout
+      - run: sudo apt-get install ruby-full cmake
+      - setup_remote_docker:
+          docker_layer_caching: false
+          version: 18.09.3
+      - run: *install_docker
+      - restore_cache: *restore_gem_cache
+      - run: *bundle
+      - save_cache: *save_gem_cache
+      - run: *shiplane_build
+
+  - &run_docker_compose_test_container
+    name: Boot Up Docker Compose Test Environment
+    command: |
+      cp .env.test .env
+      sudo docker-compose up -d db redis bundler yarn webpacker mailcatcher test
+      sudo docker-compose exec --user=root test chmod -R 777 .
+      sudo docker-compose exec test bin/setup
+
+  - &testbase
+    machine: true
+
+jobs:
+  testing:
+    <<: *testbase
+    steps:
+      - checkout
+      - run: *run_docker_compose_test_container
+      - run: sudo docker-compose exec test dockerize -wait http://bundler:23480 -wait http://yarn:23480 -timeout 300s bundle exec rubocop
+      - run: sudo docker-compose exec test dockerize -wait http://bundler:23480 -wait http://yarn:23480 -timeout 300s bundle exec reek
+      - run: sudo docker-compose exec test dockerize -wait http://bundler:23480 -wait http://yarn:23480 -timeout 300s bundle exec rails_best_practices .
+      - run: sudo docker-compose exec test dockerize -wait http://bundler:23480 -wait http://yarn:23480 -timeout 300s bin/rails test
+      - attach_workspace:
+          at: coverage
+      - run: sudo docker-compose exec test dockerize -wait http://bundler:23480 -wait http://yarn:23480 -timeout 300s bundle exec rake simplecov:build_coverage_report
+      - store_artifacts:
+          path: coverage
+          destination: coverage
+
+  build-production:
+    <<: *buildbase
+    environment:
+      TARGET_BUILD_ENVIRONMENT: production
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      - testing
+      - build-production:
+          requires:
+            - testing
+          filters:
+            branches:
+              only: master

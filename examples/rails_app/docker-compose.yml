@@ -1,0 +1,105 @@
+version: '3.2'
+
+services:
+  base: &base
+    build:
+      context: .
+      args:
+        - APP_NAME=${APP_NAME}
+        - GITHUB_TOKEN=${GITHUB_TOKEN}
+        - RAILS_MASTER_KEY=${RAILS_MASTER_KEY}
+    tty: true
+    stdin_open: true
+    env_file: .env
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - ./:/var/www/example
+      - /var/www/example/tmp/
+      - bundle:/usr/local/bundle
+
+  # web process
+  app:
+    <<: *base
+    container_name: 'example-app'
+    image: example_base:latest
+    command: dockerize -wait http://bundler:23480 -wait http://yarn:23480 -timeout ${DEPENDENCY_TIMEOUT} bin/start_development_web_server
+    ports:
+      - '${HOST_PORT}:3000'
+
+  # workers process
+  workers:
+    <<: *base
+    container_name: 'example-workers'
+    image: example_base:latest
+    command: dockerize -wait http://bundler:23480 -timeout ${DEPENDENCY_TIMEOUT} bin/start_sidekiq
+
+  # webpack
+  webpacker:
+    <<: *base
+    container_name: 'example-webpacker'
+    image: example_base:latest
+    command: dockerize -wait http://bundler:23480 -wait http://yarn:23480 -timeout ${DEPENDENCY_TIMEOUT} bin/start_docker_webpacker_server
+    ports:
+      - '${HOST_WEBPACKER_PORT}:3035'
+
+  # test container
+  test:
+    <<: *base
+    container_name: 'example-test'
+    image: example_base:latest
+    command: dockerize -wait http://bundler:23480 -wait http://yarn:23480 -timeout ${DEPENDENCY_TIMEOUT} bin/setup_test_env
+    environment:
+      - NODE_ENV=test
+      - RAILS_ENV=test
+
+  # mailcatcher
+  mailcatcher:
+    image: schickling/mailcatcher
+    ports:
+      - "${HOST_MAILCATCHER_PORT_1}:1080"
+      - "${HOST_MAILCATCHER_PORT_2}:1025"
+
+  # database
+  db:
+    image: postgres:11.3
+    shm_size: '256mb'
+    env_file: .env
+    environment:
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_USER=${DATABASE_USERNAME}
+    ports:
+      - "${HOST_POSTGRES_PORT}:5432"
+    volumes:
+      - postgresdata:/var/lib/postgresql/data
+      - postgresconfig:/etc/postgresql
+      - postgreslog:/var/log/postgresql
+      - ./:/var/www/example
+
+  # Handles bundling prior to any dependent containers starting
+  bundler:
+    <<: *base
+    container_name: 'example-bundler'
+    image: example_base:latest
+    command: bin/update_bundle
+
+  # Handles yarning prior to any dependent containers starting
+  yarn:
+    <<: *base
+    container_name: 'example-yarn'
+    image: example_base:latest
+    command: bin/update_yarn
+
+  # redis
+  redis:
+    image: redis:alpine
+    ports:
+      - "${HOST_REDIS_PORT}:6379"
+
+# persists the data in case you destroy your container
+volumes:
+  bundle:
+  postgresdata:
+  postgresconfig:
+  postgreslog:
