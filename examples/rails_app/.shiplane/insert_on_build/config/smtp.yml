@@ -1,0 +1,7 @@
+production:
+  address: smtp-relay.gmail.com
+  port: 587
+  user_name: <%= Rails.application.credentials.gmail_username %>
+  password: <%= Rails.application.credentials.gmail_password %>
+  authentication: plain
+  enable_starttls_auto: true

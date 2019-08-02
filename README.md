@@ -73,6 +73,8 @@ You can generate a default version of this file via the following command:
 rake shiplane:install[<application_name>]
 ```
 
+Reference the example [shiplane.ymls](examples/rails_app/shiplane.yml) for some ideas on how to configure your app.
+
 ### Using Shiplane
 #### Steps involved in provisioning and deploying
 Currently, Shiplane assumes you have an empty VM/VPS/Metal Box with some form of linux on it (though testing has primarily been done on Ubuntu boxes). Shiplane assumes an otherwise EMPTY install. It is HIGHLY recommended that you NOT use Shiplane (or any other provisioning) on an install with software other than a basic OS installed.
@@ -107,6 +109,8 @@ Shiplane provides rake tasks that may be used to build your Docker containers in
 
 It is intended that this be integrated into your CI pipeline and some examples are provided (Currently, we provide an example for Circle CI).
 
+Configuration for building is provided by the `shiplane.yml` file that has already been mentioned and any files in the `.shiplane` folder. Under this folder, any files under `insert_on_build` will be inserted into you application structure during the build process. e.g. in the [rails_app](examples/rails_app) example, the config folder will be inserted into the docker container during the build process. ERB files can be evaluated by shiplane to provide files with keys or other such things inserted. The `production_dockerfile_stages` file under the `.shiplane` folder utilizes docker's multistage building technique to take your local dockerfile and append new stages that give you the chance to perform any pre-production stages you might need. See the [example](examples/rails_app/.shiplane/production_dockerfile_stages) for a sample of what you might do yourself.
+
 You can build a docker container based on the HEAD of your current branch like so:
 ```sh
 bundle exec cap production shiplane
@@ -118,6 +122,7 @@ Shiplane provides tasks to help you deploy your code. These tasks depend on your
 Currently, the following Deployers are provided:
 - shiplane_deployers_capistrano_docker `# Uses Capistrano and Raw Docker to run your containers`
 
+The Capistrano deployer uses Capistrano's configuration. You can see an example of how this works under the [examples folder](examples/rails_app/config/deploy.rb)
 
 You can run a deployment like so:
 ```sh
@@ -130,7 +135,7 @@ This is as much a reminder to me as anyone else. If a new version of the gem has
 bundle install --full-index
 ```
 
-##### `Could not load database configuration. No such file - ["config/database.yml"]`
+##### [Rails Application] `Could not load database configuration. No such file - ["config/database.yml"]`
 If you are receiving similar messages during the build process, this likely means that you are running a task during the build (e.g. asset precompilation) that is loading up the Rails initializers and have an initializer that tries to connect to the database. You can fix this by finding which of your initializers is being called. See this snippet here from an app that shows where you would find the offending initializer:
 ```
 /var/www/surveyor/vendor/bundle/ruby/2.6.0/gems/zeitwerk-2.1.6/lib/zeitwerk/kernel.rb:23:in `require'
@@ -155,12 +160,11 @@ Shiplane::SafeBuild.wrap do
     belongs_to :true_owner, polymorphic: true
   end
 end
-
 ```
 
 ## Becoming Involved
 ### Community Channels
-You can join our [Discord community](https://discord.gg/drrn2YG) to ask any questions you might have or to get ahold of someone in the community who might be able to help you. There is no guarantee of service implied, but we absolutely believe in helping out our fellow developers and will do so as we are able. If you feel you know some stuff about Shiplane, feel free to hang out and please help out as well!
+You can join our [Discord community](https://discord.gg/drrn2YG) to ask any questions you might have or to get ahold of someone in the community who might be able to help you (I hang out here just about every day of the week and most of the weekend). There is no guarantee of service implied, but we absolutely believe in helping out our fellow developers and will do so as we are able. If you feel you know some stuff about Shiplane, feel free to hang out and please help out as well!
 
 ### Contributing
 
