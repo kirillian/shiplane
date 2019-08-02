@@ -88,7 +88,7 @@ module Shiplane
             if File.extname(filepath) == ".erb"
               copy_erb_file(filepath)
             else
-              FileUtils.mkdir_p File.join(build_directory, filepath)
+              FileUtils.mkdir_p File.join(build_directory, File.dirname(filepath))
               FileUtils.cp filepath, File.join(build_directory, filepath)
             end
           end
