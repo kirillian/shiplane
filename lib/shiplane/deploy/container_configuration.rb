@@ -17,8 +17,6 @@ module Shiplane
 
       def exposed_ports
         @exposed_ports ||= [options.fetch(:expose, [])].flatten - published_ports
-      rescue => e
-        binding.pry
       end
 
       def environment
@@ -83,7 +81,7 @@ module Shiplane
           docker_command(role),
           "run -d",
           volumes.map{|volume_set| "-v #{volume_set}" },
-          published_ports.map{|port| "--expose #{port} -p #{port}" },
+          published_ports.map{|port| "-p #{port}" },
           exposed_ports.map{|port| "--expose #{port}" },
           "--name #{unique_container_name}",
           virtual_host ? "-e VIRTUAL_HOST=#{virtual_host}" : nil,
