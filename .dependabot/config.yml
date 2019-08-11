@@ -1,0 +1,15 @@
+version: 1
+update_configs:
+  - package_manager: "javascript"
+    directory: "/"
+    update_schedule: "live"
+  - package_manager: "docker"
+    directory: "/"
+    update_schedule: "weekly"
+  - package_manager: "ruby:bundler"
+    directory: "/"
+    update_schedule: "live"
+    default_reviewers:
+      - "kirillian"
+    default_labels:
+      - "dependencies"
