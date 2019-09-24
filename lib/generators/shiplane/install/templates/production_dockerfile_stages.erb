@@ -21,8 +21,6 @@ RUN bundle install --deployment --jobs=4 --without development test
 
 RUN yarn install --production
 
-RUN rm -rf node_modules/n2-styles/test/
-
 RUN bundle exec rake assets:precompile
 
 RUN sed -i "s/${GITHUB_TOKEN}//" Gemfile.lock

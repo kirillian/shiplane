@@ -23,9 +23,6 @@ RUN bundle install --deployment --jobs=4 --without development test
 
 RUN yarn install --production
 
-# Copy the overwritten mdbootstrap mdb.js to fix the errors they are leaving in.
-RUN cp vendor/node_modules/mdbootstrap-pro/js/mdb.js node_modules/mdbootstrap-pro/js/mdb.js
-
 RUN bundle exec rake assets:precompile
 
 RUN sed -i "s/${GITHUB_TOKEN}//" Gemfile.lock
