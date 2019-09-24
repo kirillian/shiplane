@@ -75,6 +75,8 @@ rake shiplane:install[<application_name>]
 
 Reference the example [shiplane.ymls](examples/rails_app/shiplane.yml) for some ideas on how to configure your app.
 
+> **WARNING**: Make sure to configure your shiplane.yml here. The following commands make use of some or all of those configurations!!
+
 ### Using Shiplane
 #### Steps involved in provisioning and deploying
 Currently, Shiplane assumes you have an empty VM/VPS/Metal Box with some form of linux on it (though testing has primarily been done on Ubuntu boxes). Shiplane assumes an otherwise EMPTY install. It is HIGHLY recommended that you NOT use Shiplane (or any other provisioning) on an install with software other than a basic OS installed.
