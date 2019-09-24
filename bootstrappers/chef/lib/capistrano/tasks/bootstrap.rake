@@ -24,6 +24,11 @@ namespace :shiplane do
     task :evaluate_erb_files, :username, :keypath do |task, args|
       Dotenv.load Shiplane::ChefHost.env_file
       on fetch(:shiplane_hosts).map(&:capistrano_role) do |host|
+        @shiplane_users = [
+          "docker",
+          host.user,
+        ].compact.uniq.join("\",\"")
+
         Dir["#{File.expand_path("../../../chef", __FILE__)}/**/*.erb"].map do |filename|
           compiled_template = ERB.new(File.read(filename)).result(binding)
           compiled_file_name = filename.match(/.*\/chef\/(.*)\.erb/)[1]

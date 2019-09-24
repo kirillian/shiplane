@@ -1,6 +1,28 @@
 group "#{node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "docker")}"
-user "#{node.fetch("barebones-docker", {}).fetch("user", {}).fetch("name", "docker")}" do
-  group "#{node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "docker")}"
+
+node.fetch("barebones-docker", {}).fetch("users", []).each do |user_name|
+  user user_name do
+    group "#{node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "docker")}"
+  end
+
+  directory "/home/#{user_name}/.docker" do
+    owner user_name
+    group node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "docker")
+    mode 0770
+    only_if { ::File.directory? "/home/#{user_name}/" }
+  end
+
+  file "/home/#{user_name}/.docker/config.json" do
+    owner user_name
+    group node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "docker")
+    mode 0660
+    only_if { ::File.directory? "/home/#{user_name}/" }
+  end
+end
+
+group "#{node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "docker")}" do
+  append true
+  members node.fetch("barebones-docker", {}).fetch("users", [])
 end
 
 docker_service 'default' do
