@@ -1,0 +1,16 @@
+default: &default
+  url: redis://<%= ENV['REDIS_HOST'] %>:<%= ENV['REDIS_PORT'] %>
+  db: <%= ENV['REDIS_DATABASE_NUMBER'] %>
+  pool_size: 5
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+staging:
+  <<: *default
+
+production:
+  <<: *default
