@@ -15,8 +15,8 @@ services:
       - db
       - redis
     volumes:
-      - ./:/var/www/example
-      - /var/www/example/tmp/
+      - ./:/var/www/${APP_NAME}
+      - /var/www/${APP_NAME}/tmp/
       - bundle:/usr/local/bundle
 
   # web process
