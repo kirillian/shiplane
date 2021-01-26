@@ -31,5 +31,5 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'dotenv', '~> 2.1', '>= 2.1.1'
   spec.add_runtime_dependency 'facets', '~> 3.1', '>= 3.1.0'
-  spec.add_runtime_dependency 'rake', '~> 12.0', '>= 12.0.0'
+  spec.add_runtime_dependency 'rake', '~> 13.0', '>= 12.0.0'
 end

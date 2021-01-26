@@ -9,3 +9,4 @@
 /pkg
 /bootstrappers/chef/pkg
 /deployers/capistrano_docker/pkg
+.ruby-version

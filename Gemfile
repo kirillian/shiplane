@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 source 'https://rubygems.org'
 
-ruby '2.5.1'
-
 gemspec
 
 gem "shiplane_bootstrappers_chef", path: File.expand_path('bootstrappers/chef', __dir__), require: false
