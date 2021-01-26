@@ -164,6 +164,11 @@ Shiplane::SafeBuild.wrap do
 end
 ```
 
+#### Using Build Cache
+Shiplane is designed to always build using the --no-cache flag in order to guaranteee clean, repeatable builds, but if you find yourself troubleshooting or otherwise needing to build multiple times, you might like to use the following flag to speed up the process. Note that this is intended to be a debugging tool. Using it for production building could potentially part of the build process to run in one context and another part to run in another. Such a case might cause both positive and negative results that are difficult to troubleshoot because they are not repeatable. Don't do this, but DO use this responsibly to make your life easier when troubleshooting.
+
+`USE_BUILD_CACHE=true bundle exec cap production shiplane`
+
 ## Becoming Involved
 ### Community Channels
 You can join our [Discord community](https://discord.gg/drrn2YG) to ask any questions you might have or to get ahold of someone in the community who might be able to help you (I hang out here just about every day of the week and most of the weekend). There is no guarantee of service implied, but we absolutely believe in helping out our fellow developers and will do so as we are able. If you feel you know some stuff about Shiplane, feel free to hang out and please help out as well!

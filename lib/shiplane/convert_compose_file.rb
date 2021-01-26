@@ -32,10 +32,6 @@ module Shiplane
 
     def converted_output
       @converted_output ||= converted_compose_hash.dup.tap do |hash|
-        build_config.fetch('artifacts', {}).each do |(appname, config)|
-          hash.deep_merge!({ 'services' => { appname => { 'image' => "#{config['repo']}:#{sha}" } } })
-        end
-
         hash.traverse! do |key, value|
           if (key == 'env_file' && value == '.env.development')
             [key, '.env.production']

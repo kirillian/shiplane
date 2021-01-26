@@ -22,8 +22,7 @@ services:
   # web process
   app:
     <<: *base
-    container_name: 'example-app'
-    image: example_base:latest
+    container_name: '${APP_NAME}-app'
     command: dockerize -wait http://bundler:23480 -wait http://yarn:23480 -timeout ${DEPENDENCY_TIMEOUT} bin/start_development_web_server
     ports:
       - '${HOST_PORT}:3000'
@@ -31,15 +30,13 @@ services:
   # workers process
   workers:
     <<: *base
-    container_name: 'example-workers'
-    image: example_base:latest
+    container_name: '${APP_NAME}-workers'
     command: dockerize -wait http://bundler:23480 -timeout ${DEPENDENCY_TIMEOUT} bin/start_sidekiq
 
   # webpack
   webpacker:
     <<: *base
-    container_name: 'example-webpacker'
-    image: example_base:latest
+    container_name: '${APP_NAME}-webpacker'
     command: dockerize -wait http://bundler:23480 -wait http://yarn:23480 -timeout ${DEPENDENCY_TIMEOUT} bin/start_docker_webpacker_server
     ports:
       - '${HOST_WEBPACKER_PORT}:3035'
@@ -47,8 +44,7 @@ services:
   # test container
   test:
     <<: *base
-    container_name: 'example-test'
-    image: example_base:latest
+    container_name: '${APP_NAME}-test'
     command: dockerize -wait http://bundler:23480 -wait http://yarn:23480 -timeout ${DEPENDENCY_TIMEOUT} bin/setup_test_env
     environment:
       - NODE_ENV=test
@@ -75,20 +71,18 @@ services:
       - postgresdata:/var/lib/postgresql/data
       - postgresconfig:/etc/postgresql
       - postgreslog:/var/log/postgresql
-      - ./:/var/www/example
+      - ./:/var/www/${APP_NAME}
 
   # Handles bundling prior to any dependent containers starting
   bundler:
     <<: *base
-    container_name: 'example-bundler'
-    image: example_base:latest
+    container_name: '${APP_NAME}-bundler'
     command: bin/update_bundle
 
   # Handles yarning prior to any dependent containers starting
   yarn:
     <<: *base
-    container_name: 'example-yarn'
-    image: example_base:latest
+    container_name: '${APP_NAME}-yarn'
     command: bin/update_yarn
 
   # redis
