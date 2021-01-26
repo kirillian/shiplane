@@ -1,0 +1,5 @@
+bump:
+  sign: true
+  tag: true
+tag:
+  sign: true
