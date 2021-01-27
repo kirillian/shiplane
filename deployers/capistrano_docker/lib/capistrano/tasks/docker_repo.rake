@@ -1,18 +1,28 @@
 namespace :shiplane do
-  task :login_to_dockerhub do
+  task :login_to_container_service do
     fetch(:shiplane_container_configurations).each do |name, config|
       roles = roles(config.fetch(:capistrano_role, :all)).map{|role| Shiplane::Host.new(role, env) }
       roles.each do |role|
         on role.capistrano_role do
-          username = fetch(:shiplane_docker_registry_username)
-          password = fetch(:shiplane_docker_registry_password)
-          execute "echo '#{password}' | #{config.docker_command(role)} login --username #{username} --password-stdin"
+          command = [
+            'echo',
+            fetch(:shiplane_docker_registry_token),
+            '|',
+            config.docker_command(role),
+            'login',
+            fetch(:shiplane_docker_registry_url, nil),
+            '--username',
+            fetch(:shiplane_docker_registry_username),
+            '--password-stdin',
+          ].compact.join(' ')
+          
+          execute command
         end
       end
     end
   end
 
-  task download_container: [:login_to_dockerhub] do
+  task download_container: [:login_to_container_service] do
     fetch(:shiplane_container_configurations).each do |name, config|
       roles = roles(config.fetch(:capistrano_role, :all)).map{|role| Shiplane::Host.new(role, env) }
       roles.each do |role|

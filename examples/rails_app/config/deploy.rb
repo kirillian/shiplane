@@ -14,6 +14,8 @@ set :branch, proc { `git rev-list --max-count=1 --abbrev-commit #{ENV["REVISION"
 
 set :sha, `git rev-parse HEAD`.chomp
 
+# Use :shiplane_docker_registry_url to onnect to Container Service other than Dockerhub
+# set :shiplane_docker_registry_url, 'ghcr.io'
 set :shiplane_docker_registry_username, ENV['DOCKERHUB_USERNAME']
 set :shiplane_docker_registry_password, ENV['DOCKERHUB_PASSWORD']
 
