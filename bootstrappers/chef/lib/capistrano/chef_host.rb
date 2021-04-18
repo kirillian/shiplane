@@ -28,6 +28,8 @@ module Shiplane
           end
 
           unless install_finished
+            execute :sudo, :sysctl, "-w", "net.ipv6.conf.all.disable_ipv6=1", interaction_handler: context_variables[:interaction_handler]
+            execute :sudo, :sysctl, "-w", "net.ipv6.conf.default.disable_ipv6=1", interaction_handler: context_variables[:interaction_handler]
             execute :sudo, :mkdir, '-m', '2777', '-p', Shiplane::ChefHost::REMOTE_CHEF_FOLDER_PATH, interaction_handler: context_variables[:interaction_handler]
             execute :sudo, :touch, File.join(Shiplane::ChefHost::REMOTE_CHEF_FOLDER_PATH, '.install-started'), interaction_handler: context_variables[:interaction_handler]
             execute :sudo, 'apt-get', 'update', interaction_handler: context_variables[:interaction_handler]
@@ -36,6 +38,20 @@ module Shiplane
             execute :sudo, :dpkg, '-i', Shiplane::ChefHost::CHEF_PACKAGE_NAME, interaction_handler: context_variables[:interaction_handler]
             execute :sudo, :ls, '-al', Shiplane::ChefHost::REMOTE_CHEF_FOLDER_PATH, interaction_handler: context_variables[:interaction_handler]
             execute :sudo, :touch, File.join(Shiplane::ChefHost::REMOTE_CHEF_FOLDER_PATH, '.install'), interaction_handler: context_variables[:interaction_handler]
+            execute :sudo, :sysctl, "-w", "net.ipv6.conf.all.disable_ipv6=0", interaction_handler: context_variables[:interaction_handler]
+            execute :sudo, :sysctl, "-w", "net.ipv6.conf.default.disable_ipv6=0", interaction_handler: context_variables[:interaction_handler]
+          end
+        end
+      end
+    end
+
+    def reinstall
+      with_context do
+        SSHKit::Coordinator.new(host).each in: :parallel do
+          context_variables = fetch(:shiplane_sshkit_values)
+
+          if(test("[ -f #{File.join(Shiplane::ChefHost::REMOTE_CHEF_FOLDER_PATH, '.install')} ]"))
+            execute :sudo, :rm, File.join(Shiplane::ChefHost::REMOTE_CHEF_FOLDER_PATH, '.install'), interaction_handler: context_variables[:interaction_handler]
           end
         end
       end
@@ -48,7 +64,7 @@ module Shiplane
           context_variables = fetch(:shiplane_sshkit_values)
 
           begin
-            execute :sudo, 'chef-solo', '-c', "#{Shiplane::ChefHost::REMOTE_CHEF_FOLDER_PATH}/solo.rb", interaction_handler: context_variables[:interaction_handler]
+            execute :sudo, 'chef-solo', '-c', "#{Shiplane::ChefHost::REMOTE_CHEF_FOLDER_PATH}/solo.rb", "--chef-license", "accept", interaction_handler: context_variables[:interaction_handler]
           rescue => e
             errors["#{h}"] = Shiplane::ChefErrorParser.parse(e)
           end

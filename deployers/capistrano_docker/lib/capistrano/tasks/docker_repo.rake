@@ -6,7 +6,7 @@ namespace :shiplane do
         on role.capistrano_role do
           command = [
             'echo',
-            fetch(:shiplane_docker_registry_token),
+            "\"#{fetch(:shiplane_docker_registry_token)}\"",
             '|',
             config.docker_command(role),
             'login',
@@ -15,7 +15,7 @@ namespace :shiplane do
             fetch(:shiplane_docker_registry_username),
             '--password-stdin',
           ].compact.join(' ')
-          
+
           execute command
         end
       end

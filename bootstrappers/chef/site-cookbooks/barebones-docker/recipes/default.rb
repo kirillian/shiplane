@@ -1,3 +1,13 @@
+apt_repository 'docker' do
+  arch               "amd64"
+  components         %w(stable)
+  distribution       node['lsb'].nil? || node['lsb']['codename'].nil? ? '' : node['lsb']['codename']
+  key                'https://download.docker.com/linux/ubuntu/gpg'
+  keyserver          'keyserver.ubuntu.com'
+  uri                "https://download.docker.com/linux/#{node['platform']}"
+  action             :add
+end
+
 group "#{node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "docker")}"
 
 node.fetch("barebones-docker", {}).fetch("users", []).each do |user_name|
@@ -25,13 +35,14 @@ group "#{node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "do
   members node.fetch("barebones-docker", {}).fetch("users", [])
 end
 
-docker_service 'default' do
-  group "#{node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "docker")}"
-  install_method 'package'
-  service_manager 'systemd'
-  auto_restart true
-  systemd_opts ["TasksMax=infinity","MountFlags=private"]
+docker_installation_package 'default' do
   version "#{node.fetch("barebones-docker", {}).fetch("docker", {}).fetch("version", "18.06.1")}"
+  action :nothing
+  package_options %q|--force-yes -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-all'| # if Ubuntu for example
+end
+
+docker_service_manager_systemd 'default' do
+  systemd_opts ["TasksMax=infinity","MountFlags=private"]
   action :nothing
 end
 
@@ -46,6 +57,7 @@ end
 
 docker_container 'nginx_reverse_proxy' do
   action :nothing
+  restart_policy 'always'
   repo 'jwilder/nginx-proxy'
   tag 'alpine'
   port [ '80:80', '443:443' ]
@@ -61,6 +73,8 @@ end
 
 docker_container 'nginx-proxy-letsencrypt' do
   action :nothing
+  restart_policy 'always'
+  entrypoint nil
   repo 'jrcs/letsencrypt-nginx-proxy-companion'
   volumes_from 'nginx_reverse_proxy'
   volumes [
@@ -142,8 +156,8 @@ end
 
 execute 'ensure_docker_nginx_proxy_prerequisites' do
   command "echo 'Ensuring Docker NGINX proxy prereqs...'"
-  notifies :create, "docker_service[default]", :immediately
-  notifies :start, "docker_service[default]", :immediately
+  notifies :create, "docker_installation_package[default]", :immediately
+  notifies :start, "docker_service_manager_systemd[default]", :immediately
   notifies :create_if_missing, "directory[/etc/ssl/certs/docker]", :immediately
   notifies :create_if_missing, "directory[/etc/docker/nginx-proxy/conf.d]", :immediately
   notifies :create_if_missing, "directory[/etc/docker/nginx-proxy/vhost.d]", :immediately
@@ -157,6 +171,8 @@ execute 'ensure_docker_nginx_proxy_prerequisites' do
   notifies :pull, "docker_image[jrcs/letsencrypt-nginx-proxy-companion]", :immediately
   notifies :redeploy, "docker_container[nginx_reverse_proxy]", :immediately
   notifies :redeploy, "docker_container[nginx-proxy-letsencrypt]", :immediately
+  notifies :run, "docker_container[nginx_reverse_proxy]", :immediately
+  notifies :run, "docker_container[nginx-proxy-letsencrypt]", :immediately
 
   action :run
 end

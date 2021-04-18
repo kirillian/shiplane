@@ -64,7 +64,7 @@ module Shiplane
       end
 
       def network_connect_commands(role)
-        @network_commands ||= networks.map do |network|
+        @network_commands ||= networks[1..-1].map do |network|
           [
             docker_command(role),
             "network connect",
@@ -84,6 +84,8 @@ module Shiplane
           published_ports.map{|port| "-p #{port}" },
           exposed_ports.map{|port| "--expose #{port}" },
           "--name #{unique_container_name}",
+          "--network=#{networks.first}",
+          "--network-alias=#{network_alias}",
           virtual_host ? "-e VIRTUAL_HOST=#{virtual_host}" : nil,
           letsencrypt_host ? "-e LETSENCRYPT_HOST=#{letsencrypt_host}" : nil,
           letsencrypt_email ? "-e LETSENCRYPT_EMAIL=#{letsencrypt_email}" : nil,

@@ -7,7 +7,7 @@ DEPENDENCIES
     revision: fb4d6d693152e691cedcbd01f5497dbe2e19fa0d
   chef-server-with-letsencrypt (~> 4.0.0)
   cmake (~> 0.3.0)
-  docker (~> 4.9.0)
+  docker (~> 7.7.0)
   environment_variables
     git: https://github.com/room118solutions/chef-environment-variables.git
     revision: b72ddc7f3f1f796372c355eb85ec996897c09496
@@ -37,7 +37,7 @@ DEPENDENCIES
 GRAPH
   apt (7.1.1)
   build-essential (8.2.1)
-    mingw (>= 1.1.0)
+    mingw (>= 1.1)
     seven_zip (>= 0.0.0)
   chef-ingredient (3.1.1)
   chef-server (5.5.2)
@@ -48,7 +48,7 @@ GRAPH
   chef-sugar (5.0.0)
   cmake (0.3.0)
   cron (6.2.1)
-  docker (4.9.0)
+  docker (7.7.0)
   environment_variables (0.1.0)
   fail2ban (5.0.2)
     yum-epel (>= 0.0.0)
@@ -63,12 +63,12 @@ GRAPH
     seven_zip (>= 0.0.0)
   ntp (3.6.1)
   openssh (2.7.1)
-    iptables (>= 1.0.0)
+    iptables (>= 1.0)
   openssl (6.0.0)
   seven_zip (3.1.0)
     windows (>= 0.0.0)
   sudo (5.4.4)
   ufw (3.2.1)
-    firewall (>= 2.0.0)
+    firewall (>= 2.0)
   windows (5.2.2)
   yum-epel (3.3.0)
