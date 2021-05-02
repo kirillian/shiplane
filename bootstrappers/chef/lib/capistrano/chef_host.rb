@@ -60,11 +60,12 @@ module Shiplane
     def configure
       with_context do
         errors = {}
+        SSHKit.config.default_env["CHEF_LICENSE"] = "accept"
         SSHKit::Coordinator.new(host).each in: :parallel do |h|
           context_variables = fetch(:shiplane_sshkit_values)
 
           begin
-            execute :sudo, 'chef-solo', '-c', "#{Shiplane::ChefHost::REMOTE_CHEF_FOLDER_PATH}/solo.rb", "--chef-license", "accept", interaction_handler: context_variables[:interaction_handler]
+            execute :sudo, 'chef-solo', '-c', "#{Shiplane::ChefHost::REMOTE_CHEF_FOLDER_PATH}/solo.rb", interaction_handler: context_variables[:interaction_handler]
           rescue => e
             errors["#{h}"] = Shiplane::ChefErrorParser.parse(e)
           end
