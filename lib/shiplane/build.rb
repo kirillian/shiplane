@@ -73,7 +73,7 @@ module Shiplane
     def token_login_command
       @token_login_command ||= [
         'echo',
-        login_token,
+        "\"#{login_token}\"",
         '|',
         'docker',
         'login',
