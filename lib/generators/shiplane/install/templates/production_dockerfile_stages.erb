@@ -6,6 +6,8 @@ COPY . $APP_PATH
 
 WORKDIR $APP_PATH
 
+ARG RAILS_ENV production
+ENV RAILS_ENV $RAILS_ENV
 ARG GITHUB_TOKEN
 ENV GITHUB_TOKEN $GITHUB_TOKEN
 ENV SHIPLANE building
@@ -36,7 +38,8 @@ WORKDIR $APP_PATH
 RUN bundle config --local path vendor/bundle
 RUN bundle config --local without development:test:assets
 
-ENV RAILS_ENV production
+ARG RAILS_ENV production
+ENV RAILS_ENV $RAILS_ENV
 ENV SHIPLANE running
 ENV RAILS_LOG_TO_STDOUT true
 ENV RAILS_SERVE_STATIC_FILES true

@@ -8,7 +8,7 @@ lock '3.11.0'
 set :application, 'podcaster'
 set :repo_url, 'git@github.com:kirillian/podcaster.git'
 
-set :deploy_to, '/var/www/battlecryforfreedom'
+set :deploy_to, '/var/www/my_app_network'
 
 # Default value for :log_level is :debug
 # set :log_level, :debug
@@ -54,8 +54,21 @@ set :sha, `git rev-parse HEAD`.chomp
 set :shiplane_docker_registry_username, ENV['DOCKERHUB_USERNAME']
 set :shiplane_docker_registry_password, ENV['DOCKERHUB_PASSWORD']
 
+
+set :shiplane_build_environment_variables, {
+  # The following example Fetches RAILS_ENV from your Capistrano environment-specific configuration
+  # RAILS_ENV: proc { fetch(:rails_env, 'production') },
+}
+
+# The following setting points shiplane to Github's Registry
+# set :shiplane_docker_registry_url, 'ghcr.io'
+
+# The following settings assign the username and token/password needed to login to a given registry
+# set :shiplane_docker_registry_username, ENV['SHIPLANE_CONTAINER_REGISTRY_USERNAME']
+# set :shiplane_docker_registry_token, ENV['SHIPLANE_CONTAINER_REGISTRY_TOKEN']
+
 set :shiplane_networks, {
-  battlecryforfreedom: {
+  my_app_network: {
     connections: [
       "nginx_reverse_proxy",
       "nginx-proxy-letsencrypt",
@@ -65,28 +78,28 @@ set :shiplane_networks, {
 
 set :shiplane_containers, {
   app: {
-    alias: 'battlecryforfreedom-app',
+    alias: 'my_app-app',
     volumes: [],
     environment: [],
     expose: 3000,
     capistrano_role: "docker",
-    repo: "kirillian2/podcaster",
+    repo: "my_docker_repo_account_name/my_docker_repo",
     command: 'bin/start',
-    virtual_host: "battlecryforfreedom.com",
-    letsencrypt_email: "john.epperson@battlecryforfreedom.com",
+    virtual_host: "my_app.com",
+    letsencrypt_email: "john.epperson@my_app_network.com",
     networks: [
-      "battlecryforfreedom"
+      "my_app_network"
     ],
   },
   sidekiq: {
-    alias: 'battlecryforfreedom-sidekiq',
+    alias: 'my_app-sidekiq',
     volumes: [],
     environment: [],
     capistrano_role: "docker",
-    repo: "kirillian2/podcaster",
+    repo: "my_docker_repo_account_name/my_docker_repo",
     command: 'bin/start_sidekiq_workers',
     networks: [
-      "battlecryforfreedom"
+      "my_app_network"
     ],
   },
   redis: {
@@ -101,22 +114,37 @@ set :shiplane_containers, {
     repo: "redis",
     tag: "4.0.9-alpine",
     networks: [
-      "battlecryforfreedom"
+      "my_app_network"
     ],
+    deploy: {
+      # This setting will tell shiplane NOT to restart this container every deploy
+      restart: false,
+    },
   },
   postgres: {
     alias: 'postgres',
     volumes: [
       "/var/lib/postgres/data:/var/lib/postgresql/data",
     ],
+    environment: {
+      POSTGRES_PASSWORD: ENV['DATABASE_PASSWORD'],
+      POSTGRES_USER: ENV['DATABASE_USERNAME'],
+    },
+    flags: {
+      'shm-size' => '256MB',
+    },
     expose: 5432,
     publish: 5432,
     capistrano_role: "docker",
     repo: "postgres",
     tag: "9.6",
     networks: [
-      "battlecryforfreedom"
+      "my_app_network"
     ],
+    deploy: {
+      # This setting will tell shiplane NOT to restart this container every deploy
+      restart: false,
+    },
   },
 }
 

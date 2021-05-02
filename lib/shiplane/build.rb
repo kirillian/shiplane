@@ -19,6 +19,16 @@ module Shiplane
       @postfix = postfix
 
       Dotenv.overload File.join(Dir.pwd, build_config.fetch('environment_file', '.env'))
+
+      # Add any ENV variable overrides from the capistrano configuration
+      environment_variable_overrides = fetch(:shiplane_build_environment_variables, {})
+      environment_variable_overrides.each do |key, value|
+        if value.is_a? Proc
+          ENV[key.to_s] = value.call
+        else
+          ENV[key.to_s] = value
+        end
+      end
     end
 
     def build!
