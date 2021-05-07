@@ -44,7 +44,11 @@ module Shiplane
       end
 
       def virtual_host
-        @virtual_host ||= options[:virtual_host]
+        return @virtual_host if defined?(@virtual_host) && @virtual_host
+
+        if options[:virtual_host]
+          @virtual_host = options[:virtual_host].is_a?(Proc) ? options[:virtual_host].call : options[:virtual_host]
+        end
       end
 
       def letsencrypt_host
