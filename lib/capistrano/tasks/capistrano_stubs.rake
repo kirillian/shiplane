@@ -12,6 +12,22 @@ namespace :deploy do
   end
 end
 
+Rake::Task["deploy"].clear
+task :deploy, :sha do |t, args|
+  sha = args[:sha] || fetch(:sha) || `git rev-parse HEAD`.chomp
+  set :sha, sha
+
+  set(:deploying, true)
+  %w{ starting started
+      updating updated
+      publishing published
+      finishing finished }.each do |task|
+    invoke "deploy:#{task}"
+  end
+end
+Rake::Task["default"].clear
+task default: :deploy
+
 
 # deploy
 #   deploy:check

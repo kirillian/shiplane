@@ -131,6 +131,12 @@ You can run a deployment like so:
 bundle exec cap production deploy
 ```
 
+You can also deploy a specific Git SHA using the following syntax:
+
+```sh
+bundle exec cap production deploy[<sha>]
+```
+
 ### Troubleshooting
 This is as much a reminder to me as anyone else. If a new version of the gem has just been released and you are trying to pull it, make sure to run the following if bundler fails:
 ```

@@ -16,7 +16,7 @@ namespace :deploy do
   task :publishing do
     invoke "shiplane:stop_old_containers"
     invoke "shiplane:remove_conflicting_containers"
-    invoke "shiplane:deploy_latest"
+    invoke "shiplane:deploy"
   end
 
   task :finishing do
@@ -46,7 +46,7 @@ namespace :shiplane do
   end
 
   desc "Deploy the current branch to production via its docker container"
-  task deploy_latest: [:instantiate_shiplane_environment, :create_networks, :download_container, :stop_old_containers, :remove_conflicting_containers] do
+  task deploy: [:instantiate_shiplane_environment, :create_networks, :download_container, :stop_old_containers, :remove_conflicting_containers] do
     fetch(:shiplane_container_configurations).each do |name, config|
       roles = roles(config.fetch(:capistrano_role, :all)).map{|role| Shiplane::Host.new(role, env) }
       roles.each do |role|
