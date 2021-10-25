@@ -9,20 +9,21 @@ require_relative 'configuration'
 module Shiplane
   class Build
     extend Forwardable
-    attr_accessor :sha, :postfix, :tag_latest
+    attr_accessor :sha, :postfix, :tag_latest, :stage, :build_environment_variables
 
-    delegate %i(build_config project_config) => :shiplane_config
+    delegate %i(build_config project_config build_environment_filepath) => :shiplane_config
 
-    def initialize(sha, postfix:, tag_latest: false)
+    def initialize(sha, postfix:, tag_latest: false, stage: nil)
       @sha = sha
       @tag_latest = tag_latest
       @postfix = postfix
+      @stage = stage
 
-      Dotenv.overload File.join(Dir.pwd, build_config.fetch('environment_file', '.env'))
+      Dotenv.overload File.join(Dir.pwd, build_environment_filepath)
 
       # Add any ENV variable overrides from the capistrano configuration
-      environment_variable_overrides = fetch(:shiplane_build_environment_variables, {})
-      environment_variable_overrides.each do |key, value|
+      build_environment_variables = fetch(:shiplane_build_environment_variables, {})
+      build_environment_variables.each do |key, value|
         if value.is_a? Proc
           ENV[key.to_s] = value.call
         else
@@ -33,13 +34,13 @@ module Shiplane
 
     def build!
       unless File.exist?(File.join(project_folder, Shiplane::SHIPLANE_CONFIG_FILENAME))
-        Shiplane::CheckoutArtifact.checkout!(sha)
-        Shiplane::ConvertComposeFile.convert_output!(project_folder, sha)
+        Shiplane::CheckoutArtifact.checkout!(sha, config: shiplane_config)
+        Shiplane::ConvertComposeFile.convert_output!(project_folder, sha, config: shiplane_config)
       end
 
       buildable_artifacts.each do |(artifact_name, attributes)|
         compose_context = docker_config.fetch('services', {}).fetch(artifact_name.to_s, {})
-        Shiplane::ConvertDockerfile.convert_output!(project_folder, attributes, compose_context)
+        Shiplane::ConvertDockerfile.convert_output!(project_folder, attributes, compose_context, config: shiplane_config)
 
         FileUtils.cd project_folder do
           steps(artifact_name, attributes).select{|step| step.fetch(:condition, true) }.each do |step|
@@ -74,6 +75,8 @@ module Shiplane
     def build_command(artifact_name)
       [
         'docker-compose',
+        '--env-file',
+        build_environment_filepath,
         'build',
         build_cache_option,
         artifact_name,
@@ -125,7 +128,7 @@ module Shiplane
     end
 
     def shiplane_config
-      @shiplane_config ||= Shiplane::Configuration.new
+      @shiplane_config ||= Shiplane::Configuration.new(stage: stage)
     end
 
     def docker_config
@@ -187,12 +190,12 @@ module Shiplane
     end
 
     # API Helper Methods
-    def self.build!(sha, postfix = nil)
-      new(sha, postfix: postfix).build!
+    def self.build!(sha, postfix: nil, stage: nil)
+      new(sha, postfix: postfix, stage: stage).build!
     end
 
-    def self.build_latest!(sha, postfix = nil)
-      new(sha, postfix: postfix, tag_latest: true).build!
+    def self.build_latest!(sha, postfix: nil, stage: nil)
+      new(sha, postfix: postfix, tag_latest: true, stage: stage).build!
     end
   end
 end

@@ -6,16 +6,14 @@ module Shiplane
   class ConvertComposeFile
     extend Forwardable
     attr_accessor :project_folder, :sha
+    attr_reader :shiplane_config
 
     delegate %i(build_config) => :shiplane_config
 
-    def initialize(project_folder, sha)
+    def initialize(project_folder, sha, config: nil)
       @project_folder = project_folder
       @sha = sha
-    end
-
-    def shiplane_config
-      @shiplane_config ||= Shiplane::Configuration.new
+      @shiplane_config = config || Shiplane::Configuration.new
     end
 
     def compose_config
@@ -48,8 +46,8 @@ module Shiplane
       puts "Compose File Converted..."
     end
 
-    def self.convert_output!(project_folder, sha)
-      new(project_folder, sha).convert_output!
+    def self.convert_output!(project_folder, sha, config: nil)
+      new(project_folder, sha, config: config).convert_output!
     end
   end
 end

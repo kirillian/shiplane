@@ -4,21 +4,19 @@ module Shiplane
   class ConvertDockerfile
     extend Forwardable
     attr_accessor :artifact_context, :compose_context, :project_folder
+    attr_reader :shiplane_config
 
     delegate %i(build_config project_config) => :shiplane_config
 
-    def initialize(project_folder, artifact_context, compose_context)
+    def initialize(project_folder, artifact_context, compose_context, config: nil)
       @project_folder = project_folder
       @artifact_context = artifact_context
       @compose_context = compose_context
+      @shiplane_config = config || Shiplane::Configuration.new
     end
 
     def appname
       @appname ||= project_config['appname']
-    end
-
-    def shiplane_config
-      @shiplane_config ||= Shiplane::Configuration.new
     end
 
     def dockerfile_name
@@ -53,8 +51,8 @@ module Shiplane
       puts "Dockerfile Converted..."
     end
 
-    def self.convert_output!(project_folder, artifact_context, compose_context)
-      new(project_folder, artifact_context, compose_context).convert_output!
+    def self.convert_output!(project_folder, artifact_context, compose_context, config: nil)
+      new(project_folder, artifact_context, compose_context, config: config).convert_output!
     end
   end
 end

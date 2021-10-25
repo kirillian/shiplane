@@ -22,7 +22,11 @@ namespace :shiplane do
     # end
 
     task :evaluate_erb_files, :username, :keypath do |task, args|
-      Dotenv.load Shiplane::ChefHost.env_file
+      dotenv_filename = Shiplane::ChefHost.env_file
+      dotenv_filename = "#{dotenv_filename}.#{fetch(:stage)}" if File.exist?("#{dotenv_filename}.#{fetch(:stage)}")
+
+      Dotenv.load dotenv_filename
+
       on fetch(:shiplane_hosts).map(&:capistrano_role) do |host|
         @shiplane_users = [
           "docker",

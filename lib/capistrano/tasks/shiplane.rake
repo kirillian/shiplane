@@ -11,6 +11,6 @@ namespace :shiplane do
   end
 
   task :build, :sha do |t, args|
-    Shiplane::Build.build_latest!(args['sha'], fetch(:stage))
+    Shiplane::Build.build_latest!(args['sha'], postfix: fetch(:stage), stage: fetch(:stage))
   end
 end

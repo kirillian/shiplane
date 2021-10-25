@@ -1,9 +1,10 @@
 module Shiplane
   class Configuration
-    attr_accessor :project_folder
+    attr_accessor :project_folder, :stage
 
-    def initialize(project_folder = nil)
+    def initialize(project_folder: nil, stage: stage)
       @project_folder = project_folder || Dir.pwd
+      @stage = stage
     end
 
     def shiplane_config_file
@@ -28,6 +29,15 @@ module Shiplane
 
     def project_config
       @project_config ||= config.fetch('project', {})
+    end
+
+    def build_environment_filepath
+      return @build_environment_filepath if defined? @build_environment_filepath
+
+      @build_environment_filepath = build_config.fetch('environment_file', '.env')
+      @build_environment_filepath = File.join(project_folder, "#{@build_environment_filepath}.#{stage}") if File.exist?(File.join(project_folder, "#{@build_environment_filepath}.#{stage}"))
+
+      @build_environment_filepath
     end
 
     def self.config(project_folder = nil)

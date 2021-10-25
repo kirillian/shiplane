@@ -4,23 +4,21 @@ module Shiplane
   class CheckoutArtifact
     extend Forwardable
     attr_accessor :sha
+    attr_reader :shiplane_config
 
     delegate %i(build_config project_config) => :shiplane_config
 
-    def initialize(sha)
+    def initialize(sha, config: nil)
       @sha = sha
+      @shiplane_config = config || Shiplane::Configuration.new
 
       # call this before changing directories.
       # This prevents race conditions where the config file is accessed before being downloaded
-      shiplane_config
+      @shiplane_config
     end
 
     def appname
       @appname ||= project_config['appname']
-    end
-
-    def shiplane_config
-      @shiplane_config ||= Shiplane::Configuration.new
     end
 
     def github_token
@@ -40,7 +38,7 @@ module Shiplane
     end
 
     def make_directory
-      FileUtils.mkdir_p build_directory
+      FileUtils.mkdir_p app_directory
     end
 
     def checkout!
@@ -49,16 +47,38 @@ module Shiplane
       puts "Checking out Application #{appname}[#{sha}]..."
       make_directory
 
-      success = true
-      FileUtils.cd app_directory do
-        success = success && system("echo 'Downloading #{git_url}/archive/#{sha}.tar.gz --output #{appname}-#{sha}.tar.gz'")
-        success = success && system("curl -L #{git_url}/archive/#{sha}.tar.gz --output #{appname}-#{sha}.tar.gz")
-        success = success && system("tar -xzf #{appname}-#{sha}.tar.gz -C .")
-      end
+      success = system("echo 'Downloading #{git_url}/archive/#{sha}.tar.gz --output #{archive_filename}'")
+      success = success && download_archive
+      success = success && unpack_archive
 
       raise "Errors encountered while downloading archive" unless success
       puts "Finished checking out Application"
       tasks.each(&method(:send))
+    end
+
+    def archive_filename
+      @archive_filename ||= "#{appname}-#{sha}.tar.gz"
+    end
+
+    def archive_path
+      @archive_path ||= File.join(app_directory, archive_filename)
+    end
+
+    def download_archive
+      return true if File.exist? archive_path
+
+      system("curl -L #{git_url}/archive/#{sha}.tar.gz --output #{archive_path}")
+    end
+
+    def unpack_archive
+      FileUtils.rm_rf(build_directory) if File.directory?(build_directory)
+      FileUtils.mkdir_p build_directory
+
+      success = true
+      FileUtils.cd app_directory do
+        success = success && system("tar -xzf #{appname}-#{sha}.tar.gz -C .")
+      end
+      success
     end
 
     def tasks
@@ -115,8 +135,8 @@ module Shiplane
       ['vendor']
     end
 
-    def self.checkout!(sha)
-      new(sha).checkout!
+    def self.checkout!(sha, config: nil)
+      new(sha, config: config).checkout!
     end
   end
 end
