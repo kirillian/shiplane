@@ -21,12 +21,37 @@ module Shiplane
       @appname ||= project_config['appname']
     end
 
+    def bitbucket_origin?
+      project_config['version_control_host'] == 'bitbucket'
+    end
+
+    def github_origin?
+      project_config['version_control_host'] == 'github'
+    end
+
     def github_token
       @github_token ||= ENV['GITHUB_TOKEN']
     end
 
+    def bitbucket_token
+      @bitbucket_token ||= ENV['BITBUCKET_APP_PASSWORD']
+    end
+
+    def bitbucket_username
+      @bitbucket_username ||= ENV['BITBUCKET_APP_USERNAME']
+    end
+
     def git_url
-      "https://#{github_token ? "#{github_token}@" : ''}github.com/#{project_config['origin']}"
+      return github_url if github_origin?
+      return bitbucket_url if bitbucket_origin?
+    end
+
+    def github_url
+      "https://#{github_token ? "#{github_token}@" : ''}github.com/#{project_config['origin']}/archive/#{sha}.tar.gz"
+    end
+
+    def bitbucket_url
+      "https://#{bitbucket_token ? "#{bitbucket_username}:#{bitbucket_token}@" : ''}bitbucket.org/#{project_config['origin']}/get/#{sha}.tar.gz"
     end
 
     def app_directory
@@ -67,7 +92,7 @@ module Shiplane
     def download_archive
       return true if File.exist? archive_path
 
-      system("curl -L #{git_url}/archive/#{sha}.tar.gz --output #{archive_path}")
+      system("curl -L #{git_url} --output #{archive_path}")
     end
 
     def unpack_archive

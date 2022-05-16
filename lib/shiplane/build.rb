@@ -53,7 +53,7 @@ module Shiplane
       end
     rescue StepFailureException => e
       puts e.message
-      raise if ENV['RAISE_EXCEPTIONS_ON_FAILED_BUILD']
+      raise if ENV['RAISE_EXCEPTIONS_ON_FAILED_BUILD'] == 'true'
     end
 
     def steps(artifact_name, attributes)
@@ -147,7 +147,7 @@ module Shiplane
     end
 
     def dockerhub?
-      registry_configuration['url'] == :dockerhub
+      registry_configuration['url'].to_s == 'dockerhub'
     end
 
     def token_auth?

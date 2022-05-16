@@ -118,6 +118,33 @@ You can build a docker container based on the HEAD of your current branch like s
 bundle exec cap production shiplane
 ```
 
+### Environment Variables
+Shiplane uses specific .env files to make sure that a given build environment contains the appropriate environment variables. These are used for 3 separate purposes:
+- The environment that the Shiplane process is running in. For example, if you want to authenticate with a Github private repo, you will need to set the GITHUB_TOKEN environment variable in your .env file so that Shiplane can authenticate.
+- The buildtime step of building the container. If your container needs environment variables to be set during buildtime so that the container can be built, you will need these builtime env variables. Examples might include a Github Token used to pull dependencies from private repositories on Github during buildtime. These variables will not be stored in your container, but you may need to remove any traces of these variables that might be stored in your container as side effects if your dependency ecosystem does this. For example, Ruby Gems downloaded during buildtime using an Github Token will result in that token being stored in the Gemfile.lock file. The [examples folder](examples/rails_app/.shiplane/production_dockerfile_stages) provide an example of a means of removing this after bundling. You may consider a similar step during your build process.
+- The runtime environment may require some environment variables. For example, you might have a bunch of ENVIRONMENT VARIABLES necessary for your application to run (less secure, but simpler), or, you might need an environment variable to access a vault somewhere containing other runtime ENVIRONMENT VARIABLES (more secure, slightly more difficult), or, you may have none at all and use another mechanism to inject appropriate settings (you have more control over this, but the most difficult).
+
+## Important ENVIRONMENT VARIABLES for the Shiplane Process
+```sh
+GITHUB_TOKEN=XXXXXXXXXX # required if pulling from a private Github Repository
+BITBUCKET_TOKEN=XXXXXXXXXX # required if pulling from a private Bitbucket Repository
+BITBUCKET_USERNAME=XXXXXXXXXX # required if pulling from a private Bitbucket Repository
+```
+
+## Important ENVIRONMENT VARIABLES for buildtime
+```sh
+DOCKERHUB_PASSWORD=XXXXXXXXXX # deprecated but still supported token/password specifically for DOCKERHUB
+DOCKERHUB_USERNAME=XXXXXXXXXX # deprecated but still supported username specifically for DOCKERHUB
+SHIPLANE_CONTAINER_REGISTRY_TOKEN=XXXXXXXXXX # Token for container registry authentication
+SHIPLANE_CONTAINER_REGISTRY_USERNAME=XXXXXXXXXX # Username for container registry authentication
+RAISE_EXCEPTIONS_ON_FAILED_BUILD=true # Tells Shiplane to stop on a failed build and raise an exception. Defaults to 'false'
+```
+## Important ENVIRONMENT VARIABLES for runtime
+# Rails Environment Variable sample
+```sh
+RAILS_MASTER_KEY=XXXXXXXXXX
+```
+
 #### Deploying
 Shiplane provides tasks to help you deploy your code. These tasks depend on your deployment framework, but each task appropriately launches your docker containers on your selected framework.
 

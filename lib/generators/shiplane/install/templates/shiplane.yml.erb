@@ -1,17 +1,18 @@
 project:
   appname: <%= app_name %>
   version_control: git
-  # The origin url on Github
-  # origin: username/repo_title
+  version_control_host: github # alternately, use `bitbucket` if your application is hosted on BitBucket
+  # The origin url on Github or Bitbucket
+  origin: #username/<%= app_name %>
 bootstrap:
   env_file: .env.production
   chef-bootstrapper:
-    package_name: chefdk_3.13.1-1_amd64.deb
-    package_url: https://packages.chef.io/files/stable/chefdk/3.13.1/ubuntu/16.04/chefdk_3.13.1-1_amd64.deb
+    package_name: chefdk_3.6.57-1_amd64.deb
+    package_url: https://packages.chef.io/files/stable/chefdk/3.6.57/ubuntu/18.04/chefdk_3.6.57-1_amd64.deb
 build:
   registry:
     # url: ghcr.io # for Github Container Service. Should work for similar services such as Gitlab
-    # url: :dockerhub # for default Dockerhub Service
+    # url: dockerhub # for default Dockerhub Service
   settings_folder: .shiplane
   environment_file: .env.production
   compose_filepath: docker-compose.yml
@@ -20,7 +21,7 @@ build:
   artifacts:
     container-name:
       tag: <%= app_name %>-base:latest
-      repo: kirillian2/<%= app_name %>
+      repo: #username/<%= app_name %>
       ports:
         - "3000:3000"
   compose:
