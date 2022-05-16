@@ -41,8 +41,8 @@ deploy:
       requires_sudo: false
       # Put SSH options here
       # ssh_options:
-      #   user: a_user
-      #   keys: "path/to/ssh/keys"
+      #   user: <%= ENV['SSH_USERNAME_ENV_VARIABLE_HERE'] %>
+      #   keys: <%= ENV['PATH_TO_SSH_KEYS_HERE'] %>
       #   forward_agent: true
       #   auth_methods:
       #     - publickey
