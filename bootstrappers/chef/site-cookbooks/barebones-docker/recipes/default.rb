@@ -36,7 +36,8 @@ group "#{node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "do
 end
 
 docker_installation_package 'default' do
-  version "#{node.fetch("barebones-docker", {}).fetch("docker", {}).fetch("version", "18.06.1")}"
+  version "#{node.fetch("barebones-docker", {}).fetch("docker", {}).fetch("version")}"
+  package_name "#{node.fetch("barebones-docker", {}).fetch("docker", {}).fetch("package_name")}"
   action :nothing
   package_options %q|--force-yes -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-all'| # if Ubuntu for example
 end
