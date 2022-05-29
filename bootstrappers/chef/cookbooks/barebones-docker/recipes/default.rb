@@ -36,13 +36,29 @@ group "#{node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "do
 end
 
 if node['platform'] == 'ubuntu' && node['platform_version'].to_i >= 22
+  deb_arch =
+    case node['kernel']['machine']
+    when 'x86_64'
+      'amd64'
+    when 'aarch64'
+      'arm64'
+    when 'armv7l'
+      'armhf'
+    when 'ppc64le'
+      'ppc64el'
+    else
+      node['kernel']['machine']
+    end
+
   apt_repository 'Docker' do
-    components Array(new_resource.repo_channel)
+    components %w(stable)
     uri "https://download.docker.com/linux/#{node['platform']}"
     arch deb_arch
     key "https://download.docker.com/linux/#{node['platform']}/gpg"
-    action :add
+    action :nothing
   end
+
+  notifies :add, "apt_repository[Docker]", :immediately
 
   packages_to_install = %w(docker-ce docker-ce-cli containerd.io docker-compose-plugin)
 
