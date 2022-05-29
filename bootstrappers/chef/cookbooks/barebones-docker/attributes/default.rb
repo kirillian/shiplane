@@ -21,13 +21,13 @@ DEFAULT_DOCKER_VERSION = '18.06.1'
 case node['platform']
 when 'ubuntu'
   if node['platform_version'].to_i >= 22
-    default['barebones-docker']['docker']['version'] ||= '20.10.16'
+    default['barebones-docker']['docker']['version'] = '20.10.16'
     default['barebones-docker']['docker']['package_name'] = 'docker-ce-cli'
   else
-    default['barebones-docker']['docker']['version'] ||= DEFAULT_DOCKER_VERSION
+    default['barebones-docker']['docker']['version'] = DEFAULT_DOCKER_VERSION
     default['barebones-docker']['docker']['package_name'] = DEFAULT_DOCKER_PACKAGE_NAME
   end
 else
-  default['barebones-docker']['docker']['version'] ||= DEFAULT_DOCKER_VERSION
+  default['barebones-docker']['docker']['version'] = DEFAULT_DOCKER_VERSION
   default['barebones-docker']['docker']['package_name'] = DEFAULT_DOCKER_PACKAGE_NAME
 end
