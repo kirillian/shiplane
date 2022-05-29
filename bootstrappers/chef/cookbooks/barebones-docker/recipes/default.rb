@@ -35,7 +35,7 @@ group "#{node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "do
   members node.fetch("barebones-docker", {}).fetch("users", [])
 end
 
-if node['platform'] == 'ubuntu' &&
+if node['platform'] == 'ubuntu' && node['platform_version'].to_i >= 22
   apt_repository 'Docker' do
     components Array(new_resource.repo_channel)
     uri "https://download.docker.com/linux/#{node['platform']}"
