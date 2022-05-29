@@ -94,7 +94,7 @@ else
 end
 
 docker_service_manager_systemd 'default' do
-  systemd_opts ["TasksMax=infinity","MountFlags=private"]
+  systemd_opts "#{node.fetch("barebones-docker", {}).fetch("docker", {}).fetch("systemd_opts")}"
   action :nothing
 end
 

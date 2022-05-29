@@ -17,6 +17,7 @@
 # limitations under the License.
 DEFAULT_DOCKER_PACKAGE_NAME = 'docker-ce'
 DEFAULT_DOCKER_VERSION = '18.06.1'
+DEFAULT_SYSTEMD_OPTS = ["TasksMax=infinity","MountFlags=private"]
 
 case node['platform']
 when 'ubuntu'
@@ -30,4 +31,16 @@ when 'ubuntu'
 else
   default['barebones-docker']['docker']['version'] = DEFAULT_DOCKER_VERSION
   default['barebones-docker']['docker']['package_name'] = DEFAULT_DOCKER_PACKAGE_NAME
+end
+
+default['barebones-docker']['docker']['systemd_opts'] = DEFAULT_SYSTEMD_OPTS
+
+semver_version_number = node.fetch('barebones-docker', {}).fetch('docker', {}).fetch('version', default['barebones-docker']['docker']['version'])
+
+if semver_version_number
+  major_version, minor_version, patch_version = semver_version_number.split(".")
+
+  if major_version.to_i >= 18 && minor_version.to_i >= 8
+    default['barebones-docker']['docker']['systemd_opts'] = ["TasksMax=infinity"]
+  end
 end
