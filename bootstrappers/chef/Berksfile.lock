@@ -7,7 +7,7 @@ DEPENDENCIES
     revision: fb4d6d693152e691cedcbd01f5497dbe2e19fa0d
   chef-server-with-letsencrypt (~> 4.0.0)
   cmake (~> 0.3.0)
-  docker (~> 7.7.0)
+  docker (~> 10.1.8)
   environment_variables
     git: https://github.com/room118solutions/chef-environment-variables.git
     revision: b72ddc7f3f1f796372c355eb85ec996897c09496
@@ -48,7 +48,7 @@ GRAPH
   chef-sugar (5.0.0)
   cmake (0.3.0)
   cron (6.2.1)
-  docker (7.7.0)
+  docker (10.1.8)
   environment_variables (0.1.0)
   fail2ban (5.0.2)
     yum-epel (>= 0.0.0)
