@@ -35,11 +35,34 @@ group "#{node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "do
   members node.fetch("barebones-docker", {}).fetch("users", [])
 end
 
-docker_installation_package 'default' do
-  version "#{node.fetch("barebones-docker", {}).fetch("docker", {}).fetch("version")}"
-  package_name "#{node.fetch("barebones-docker", {}).fetch("docker", {}).fetch("package_name")}"
-  action :nothing
-  package_options %q|--force-yes -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-all'| # if Ubuntu for example
+if node['platform'] == 'ubuntu' &&
+  apt_repository 'Docker' do
+    components Array(new_resource.repo_channel)
+    uri "https://download.docker.com/linux/#{node['platform']}"
+    arch deb_arch
+    key "https://download.docker.com/linux/#{node['platform']}/gpg"
+    action :add
+  end
+
+  packages_to_install = %w(docker-ce docker-ce-cli containerd.io docker-compose-plugin)
+
+  packages_to_install.each do |package_to_install|
+    package package_to_install do
+      options %q|--force-yes -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-all'|
+      action :nothing
+    end
+
+    notifies :install, "package[#{package_to_install}]", :immediately
+  end
+else
+  docker_installation_package 'default' do
+    version "#{node.fetch("barebones-docker", {}).fetch("docker", {}).fetch("version")}"
+    package_name "#{node.fetch("barebones-docker", {}).fetch("docker", {}).fetch("package_name")}"
+    action :nothing
+    package_options %q|--force-yes -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-all'| # if Ubuntu for example
+  end
+
+  notifies :create, "docker_installation_package[default]", :immediately
 end
 
 docker_service_manager_systemd 'default' do
@@ -157,7 +180,6 @@ end
 
 execute 'ensure_docker_nginx_proxy_prerequisites' do
   command "echo 'Ensuring Docker NGINX proxy prereqs...'"
-  notifies :create, "docker_installation_package[default]", :immediately
   notifies :start, "docker_service_manager_systemd[default]", :immediately
   notifies :create_if_missing, "directory[/etc/ssl/certs/docker]", :immediately
   notifies :create_if_missing, "directory[/etc/docker/nginx-proxy/conf.d]", :immediately
