@@ -97,6 +97,7 @@ namespace :provision do
   task :fix_file_permissions, :role, :username, :keypath do |task, args|
     on roles(args['role']) do |host|
       sudo :chmod, '-R', '777', chef_path
+      sudo :chown, '-R', '$USER', chef_path
     end
   end
 
