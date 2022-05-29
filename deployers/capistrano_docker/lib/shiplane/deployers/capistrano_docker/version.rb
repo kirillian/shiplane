@@ -3,7 +3,7 @@
 module Shiplane
   module Deployers
     module CapistranoDocker
-      VERSION = "0.2.10"
+      VERSION = "0.2.11"
     end
   end
 end
