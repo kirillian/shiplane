@@ -58,8 +58,6 @@ if node['platform'] == 'ubuntu' && node['platform_version'].to_i >= 22
     action :nothing
   end
 
-  notifies :add, "apt_repository[Docker]", :immediately
-
   packages_to_install = %w(docker-ce docker-ce-cli containerd.io docker-compose-plugin)
 
   packages_to_install.each do |package_to_install|
@@ -67,8 +65,17 @@ if node['platform'] == 'ubuntu' && node['platform_version'].to_i >= 22
       options %q|--force-yes -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-all'|
       action :nothing
     end
+  end
 
-    notifies :install, "package[#{package_to_install}]", :immediately
+  execute 'install_docker_package' do
+    command "echo 'Installing Docker Package via apt...'"
+    notifies :add, "apt_repository[Docker]", :immediately
+
+    packages_to_install.each do |package_to_install|
+      notifies :install, "package[#{package_to_install}]", :immediately
+    end
+
+    action :nothing
   end
 else
   docker_installation_package 'default' do
@@ -78,7 +85,12 @@ else
     package_options %q|--force-yes -o Dpkg::Options::='--force-confold' -o Dpkg::Options::='--force-all'| # if Ubuntu for example
   end
 
-  notifies :create, "docker_installation_package[default]", :immediately
+  execute 'install_docker_package' do
+    command "echo 'Installing Docker Package via docker_installation_package...'"
+    notifies :create, "docker_installation_package[default]", :immediately
+
+    action :nothing
+  end
 end
 
 docker_service_manager_systemd 'default' do
@@ -196,6 +208,7 @@ end
 
 execute 'ensure_docker_nginx_proxy_prerequisites' do
   command "echo 'Ensuring Docker NGINX proxy prereqs...'"
+  notifies :run, "execute[install_docker_package]", :immediately
   notifies :start, "docker_service_manager_systemd[default]", :immediately
   notifies :create_if_missing, "directory[/etc/ssl/certs/docker]", :immediately
   notifies :create_if_missing, "directory[/etc/docker/nginx-proxy/conf.d]", :immediately
