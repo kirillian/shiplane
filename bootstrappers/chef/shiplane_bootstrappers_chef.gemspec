@@ -29,8 +29,7 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency 'capistrano', '~> 3.7', '>= 3.7.1'
   spec.add_runtime_dependency 'airbrussh', '~> 1.1', '>= 1.1.1'
-  spec.add_runtime_dependency 'capistrano-ssh-doctor', '~> 1.0', '~> 1.0.0'
-  spec.add_runtime_dependency 'berkshelf', '~> 7.0.0', '>= 7.0.8'
 
+  spec.add_development_dependency 'berkshelf', '~> 7.0.0', '>= 7.0.8'
   spec.add_development_dependency 'gem-release', '~> 2.2.1', '>= 2.0.4'
 end
