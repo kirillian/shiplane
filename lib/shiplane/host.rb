@@ -82,7 +82,7 @@ module Shiplane
     end
 
     def self.config
-      @config ||= YAML.load(File.read(config_filepath))
+      @config ||= YAML.load(File.read(config_filepath), aliases: true)
     end
 
     def self.config_filepath

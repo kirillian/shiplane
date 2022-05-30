@@ -14,7 +14,7 @@ module Shiplane
     end
 
     def compose_hash
-      @compose_hash ||= YAML.load(compose_file)
+      @compose_hash ||= YAML.load(compose_file, aliases: true)
     end
 
     def whitelisted_hash

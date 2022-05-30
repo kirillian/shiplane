@@ -1,4 +1,5 @@
 require 'fileutils'
+require 'open3'
 
 module Shiplane
   class CheckoutArtifact
@@ -21,6 +22,18 @@ module Shiplane
       @appname ||= project_config['appname']
     end
 
+    def current_sha
+      stdout, *_ = Open3.capture3("git rev-parse HEAD")
+
+      stdout
+    end
+
+    def current_short_sha
+      stdout, *_ = Open3.capture3("git rev-parse --short HEAD")
+
+      stdout
+    end
+
     def bitbucket_origin?
       project_config['version_control_host'] == 'bitbucket'
     end
@@ -34,11 +47,11 @@ module Shiplane
     end
 
     def bitbucket_token
-      @bitbucket_token ||= ENV['BITBUCKET_APP_PASSWORD']
+      @bitbucket_token ||= ENV['BITBUCKET_TOKEN']
     end
 
     def bitbucket_username
-      @bitbucket_username ||= ENV['BITBUCKET_APP_USERNAME']
+      @bitbucket_username ||= ENV['BITBUCKET_USERNAME']
     end
 
     def git_url
@@ -72,13 +85,23 @@ module Shiplane
       puts "Checking out Application #{appname}[#{sha}]..."
       make_directory
 
-      success = system("echo 'Downloading #{git_url}/archive/#{sha}.tar.gz --output #{archive_filename}'")
-      success = success && download_archive
-      success = success && unpack_archive
+      success = send(checkout_strategy[:method])
 
       raise "Errors encountered while downloading archive" unless success
       puts "Finished checking out Application"
       tasks.each(&method(:send))
+    end
+
+    def checkout_strategies
+      @checkout_strategies ||= [
+        { method: :archive_and_unpack_commit, conditions: -> { commit_exists? } },
+        { method: :download_archive, conditions: -> { !bitbucket_origin? } },
+        { method: :checkout_via_git, conditions: -> { true } },
+      ]
+    end
+
+    def checkout_strategy
+      @checkout_strategy ||= checkout_strategies.find{|strategy| strategy[:conditions].call }
     end
 
     def archive_filename
@@ -90,12 +113,80 @@ module Shiplane
     end
 
     def download_archive
-      return true if File.exist? archive_path
+      puts "Downloading #{git_url} --output #{archive_filename}"
+      puts "Deploying SHA different from current version. Checking out from Git Repository"
 
-      system("curl -L #{git_url} --output #{archive_path}")
+      success = system("curl -L #{git_url} --output #{archive_path}")
+      success && unpack_archive
+    end
+
+    def git_host_url
+      return "bitbucket.org" if bitbucket_origin?
+      return "github.com" if github_origin?
+
+      # TODO
+      raise 'Gitlab needs fixing'
+    end
+
+    def target_sha_is_current?
+      sha == current_short_sha.strip || sha == current_sha.strip
+    end
+
+    def copy_current_directory
+      puts "Current directory is target SHA. Copying for build"
+
+      FileUtils.cp_r(".", build_directory)
+    end
+
+    def archive_and_unpack_commit
+      puts "Creating archive from local git repo in #{archive_filename}..."
+      success = system("git archive --format=tar.gz -o #{archive_path} #{sha}")
+
+      puts "Unpacking archive to #{build_directory}..."
+      FileUtils.rm_rf(build_directory) if File.directory?(build_directory)
+      FileUtils.mkdir_p build_directory
+
+      success && system("(cd #{app_directory} && tar -xzf #{appname}-#{sha}.tar.gz -C #{build_directory})")
+    end
+
+    def git_clone_url
+      "https://#{bitbucket_username}:#{bitbucket_token}@#{git_host_url}/#{project_config['origin']}.git"
+    end
+
+    def target_sha_is_current?
+      sha == current_short_sha.strip || sha == current_sha.strip
+    end
+
+    def commit_exists?
+      system("git rev-parse #{sha}")
+    end
+
+    def checkout_via_git
+      FileUtils.rm_rf(build_directory) if File.directory?(build_directory)
+      FileUtils.mkdir_p build_directory
+
+      success = true
+      puts "Cloning from #{git_clone_url}..."
+      success = success && system("git clone --depth=1 #{git_clone_url} #{build_directory}")
+      FileUtils.cd build_directory do
+        puts "Fetching Single SHA"
+        fetch_success = system("git fetch origin #{sha} && git reset --hard FETCH_HEAD")
+
+        unless fetch_success
+          puts "Unable to fetch single commit. Fetching FULL history"
+          fetch_success = system("git fetch --unshallow && git fetch origin #{sha} && git reset --hard #{sha}")
+        end
+
+        success = success && fetch_success
+
+        puts "Removing Git folders before building..."
+        success = success && FileUtils.rm_rf("#{build_directory}/.git")
+      end
+      success
     end
 
     def unpack_archive
+      puts "Unpacking archive to #{build_directory}..."
       FileUtils.rm_rf(build_directory) if File.directory?(build_directory)
       FileUtils.mkdir_p build_directory
 

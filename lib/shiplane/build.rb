@@ -75,6 +75,8 @@ module Shiplane
     def build_command(artifact_name)
       [
         'docker-compose',
+        '-f',
+        docker_compose_filepath,
         '--env-file',
         build_environment_filepath,
         'build',
@@ -131,8 +133,12 @@ module Shiplane
       @shiplane_config ||= Shiplane::Configuration.new(stage: stage)
     end
 
+    def docker_compose_filepath
+      @docker_compose_filepath ||= File.join(project_folder, 'docker-compose.yml')
+    end
+
     def docker_config
-      @docker_config ||= YAML.load(File.new(File.join(project_folder, 'docker-compose.yml')))
+      @docker_config ||= YAML.load(File.new(docker_compose_filepath), aliases: true)
     end
 
     def buildable_artifacts
@@ -201,8 +207,8 @@ module Shiplane
 end
 
 class StepFailureException < RuntimeError
-  def initialize(command, artifact_name)
-    message = "Command [#{command}] failed for artifact: #{artifact_name}" if artifact_name
+  def initialize(command, artifact_name, error_message: nil)
+    message = "Command [#{command}] failed for artifact: #{artifact_name}#{error_message ? "\nError Message Received: #{error_message}" : ''}" if artifact_name
     super(message)
   end
 end
