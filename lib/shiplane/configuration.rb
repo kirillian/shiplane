@@ -12,7 +12,7 @@ module Shiplane
     end
 
     def config
-      @config ||= YAML.load_file(shiplane_config_file, aliases: true)
+      @config ||= YAML.load_file(shiplane_config_file)
     end
 
     def build_config

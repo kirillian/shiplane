@@ -138,7 +138,7 @@ module Shiplane
     end
 
     def docker_config
-      @docker_config ||= YAML.load(File.new(docker_compose_filepath), aliases: true)
+      @docker_config ||= YAML.load(File.new(docker_compose_filepath))
     end
 
     def buildable_artifacts
