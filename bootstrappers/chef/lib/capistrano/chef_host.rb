@@ -7,7 +7,13 @@ module Shiplane
 
     REMOTE_CHEF_FOLDER_PATH = File.join("/var","chef")
     LOCAL_CHEF_FOLDER_PATH = File.expand_path("../../../lib/chef", __FILE__)
+    LOCAL_CUSTOM_CONFIGURATION_FOLDER_PATH = File.join(Dir.pwd, '.shiplane', 'bootstrap_config')
+    REMOTE_CUSTOM_CONFIGURATION_FOLDER_PATH = File.join(REMOTE_CHEF_FOLDER_PATH, 'cookbooks', 'barebones-docker', 'files', 'default')
     COOKBOOKS_FILE_NAME = "cookbooks.tar.gz"
+    LOCAL_COOKBOOKS_FOLDER_PATH = File.expand_path("../../../cookbooks", __FILE__)
+    LOCAL_SITE_COOKBOOKS_FOLDER_PATH = File.expand_path("../../../site-cookbooks", __FILE__)
+    LOCAL_SITE_BERKS_COOKBOOKS_FOLDER_PATH = File.expand_path("../../../berks-cookbooks", __FILE__)
+    REMOTE_COOKBOOKS_FOLDER_PATH = File.join(REMOTE_CHEF_FOLDER_PATH, 'cookbooks')
     LOCAL_COOKBOOKS_FILE_PATH = File.expand_path("../../../#{COOKBOOKS_FILE_NAME}", __FILE__)
     REMOTE_COOKBOOKS_FILE_PATH = File.join(REMOTE_CHEF_FOLDER_PATH, COOKBOOKS_FILE_NAME)
     CHEF_PACKAGE_NAME = config.fetch("bootstrap", {}).fetch("chef-bootstrapper", {}).fetch("package_name")

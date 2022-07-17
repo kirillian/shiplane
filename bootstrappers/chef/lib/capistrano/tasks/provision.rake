@@ -1,5 +1,6 @@
 require 'rake'
 require 'dotenv'
+require 'open3'
 
 desc "Provision host"
 task :provision, [:role, :username, :keypath] => ['provision:default']
@@ -11,8 +12,9 @@ namespace :provision do
     :set_host_options,
     :prepare_host,
     :evaluate_erb_files,
-    :rsync_chef,
     'upload-cookbooks',
+    :rsync_chef,
+    :rsync_custom_configuration,
     :fix_file_permissions,
   ] do |task, args|
     errors = {}
@@ -84,6 +86,19 @@ namespace :provision do
     end
   end
 
+  task :rsync_custom_configuration, :role, :username, :keypath do |task, args|
+    on roles(fetch(:host_options).role) do |host|
+      rsync_arguments = [
+        '-r',
+        '-e', "ssh -p #{host.port || 22} -i #{host.netssh_options.fetch(:keys)}",
+        "#{boostrap_config_path}/",
+        "#{host.netssh_options.fetch(:user)}@#{host}:/var/chef/cookbooks/barebones-docker/files"
+      ]
+      stdout, stderr, status = Open3.capture3("rsync" *rsync_arguments)
+      binding.pry
+    end
+  end
+
   desc "Uploads the tarballed cookbooks"
   task :'upload-cookbooks', :role, :username, :keypath do |task, args|
     on roles(args['role']) do |host|
@@ -142,6 +157,10 @@ end
 
 def chef_folder_path
   File.expand_path("../../../chef", __FILE__)
+end
+
+def boostrap_config_path
+  @boostrap_config_path ||= File.join(Dir.pwd, '.shiplane', 'bootstrap_config')
 end
 
 def sudo(*args)
