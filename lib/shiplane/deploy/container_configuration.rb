@@ -7,39 +7,8 @@ module Shiplane
         @network_alias ||= options.fetch(:alias, container_name)
       end
 
-      def config_volumes
-        @config_volumes ||= config_volume_map.select do |config_volume|
-          env.fetch(:"#{config_volume[:key]}_mount", true) || env.key?(:"#{config_volume[:key]}_location")
-        end.map{|config_volume| "#{env.fetch(:"#{config_volume[:key]}_location", config_volume[:default])}:#{config_volume[:mount_path]}" }
-      end
-
-      def config_volume_map
-        {
-          proxy_config: {
-            key: :proxy_conf_volume,
-            default: "/etc/docker/nginx-proxy/proxy.conf",
-            mount_path: "/etc/nginx/proxy.conf",
-          },
-          conf_d_config: {
-            key: :conf_d_volume,
-            default: "/etc/docker/nginx-proxy/conf.d",
-            mount_path: "/etc/nginx/conf.d",
-          },
-          vhost_d_config: {
-            key: :vhost_d_volume,
-            default: "/etc/docker/nginx-proxy/vhost.d",
-            mount_path: "/etc/nginx/vhost.d",
-          },
-          share_config: {
-            key: :share_volume,
-            default: "/etc/docker/nginx-proxy/share",
-            mount_path: "/etc/nginx/share",
-          },
-        }
-      end
-
       def volumes
-        @volumes ||= options.fetch(:volumes, []).concat(config_volumes).uniq
+        @volumes ||= options.fetch(:volumes, [])
       end
 
       def published_ports
