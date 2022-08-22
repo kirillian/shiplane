@@ -46,7 +46,7 @@ namespace :shiplane do
   end
 
   desc "Deploy the current branch to production via its docker container"
-  task deploy: [:instantiate_shiplane_environment, :create_networks, :download_container, :stop_old_containers, :remove_conflicting_containers] do
+  task deploy: [:instantiate_shiplane_environment, :create_networks, :download_container, :stop_old_containers, :remove_conflicting_containers, :cleanup_old_releases] do
     fetch(:shiplane_container_configurations).each do |name, config|
       roles = roles(config.fetch(:capistrano_role, :all)).map{|role| Shiplane::Host.new(role, env) }
       roles.each do |role|
@@ -81,6 +81,32 @@ namespace :shiplane do
             execute "#{config.docker_command(role)} rm #{container_id}"
           end
         end
+      end
+    end
+  end
+
+  task :cleanup_old_releases do
+    all_roles = {}
+
+    fetch(:shiplane_container_configurations).each do |name, config|
+      roles = roles(config.fetch(:capistrano_role, :all)).map{|role| Shiplane::Host.new(role, env) }
+
+      roles.each do |role|
+        all_roles[role] = config.docker_command(role)
+        on role.capistrano_role do
+          container_ids_to_keep = capture("#{config.docker_command(role)} container ls -aq --filter name=#{config.container_name} -n #{config.env.fetch(:keep_releases, 5)}").split("\n")
+          all_container_ids = capture("#{config.docker_command(role)} container ls -aq --filter name=#{config.container_name}").split("\n")
+
+          (all_container_ids - container_ids_to_keep).each do |container_id|
+            execute "#{config.docker_command(role)} rm #{container_id}"
+          end
+        end
+      end
+    end
+
+    all_roles.keys.each do |role|
+      on role.capistrano_role do
+        execute "#{all_roles[role]} image prune -fa"
       end
     end
   end

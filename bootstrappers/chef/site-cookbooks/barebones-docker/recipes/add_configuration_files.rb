@@ -60,6 +60,15 @@ remote_directory '/etc/docker/nginx-proxy/share' do
   ignore_failure true
 end
 
+cookbook_file '/etc/docker/nginx-proxy/proxy.conf' do
+  source 'nginx-proxy/proxy.conf'
+  owner "#{node.fetch("barebones-docker", {}).fetch("user", {}).fetch("name", "docker")}"
+  group "#{node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "docker")}"
+  mode 0755
+  action :nothing
+  ignore_failure true
+end
+
 directory "/var/log/nginx" do
   recursive true
   owner "#{node.fetch("barebones-docker", {}).fetch("user", {}).fetch("name", "docker")}"
@@ -131,16 +140,18 @@ end
 # end
 # Chef::Log.debug("*" * 120)
 
-if run_context.cookbook_collection['barebones-docker'].manifest.fetch('all_files', []).any?{|file| file['path'] == 'files/nginx-proxy/proxy.conf' }
+if run_context.cookbook_collection['barebones-docker'].manifest.fetch('all_files', []).any?{|file| file['path'] == 'files/nginx-proxy/proxy.conf' || file['path'] == 'files/default/nginx-proxy/proxy.conf' }
   execute 'barebones_docker_write_proxy_conf' do
     command "echo 'proxy.conf' overridden. Skipping writing 'proxy.conf' ..."
+
+    notifies :create, "cookbook_file[/etc/docker/nginx-proxy/proxy.conf]", :immediately
 
     action :nothing
   end
 else
   execute 'barebones_docker_write_proxy_conf' do
     command "echo 'proxy.conf' not found. Writing 'proxy.conf' ..."
-    notifies :create_if_missing, "template[/etc/docker/nginx-proxy/proxy.conf]", :immediately
+    notifies :create, "template[/etc/docker/nginx-proxy/proxy.conf]", :immediately
 
     action :nothing
   end
