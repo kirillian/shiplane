@@ -33,7 +33,7 @@ GEM
       rake (>= 10.0.0)
       sshkit (>= 1.9.0)
     concurrent-ruby (1.1.10)
-    dotenv (2.7.6)
+    dotenv (2.8.1)
     facets (3.1.0)
     gem-release (2.2.2)
     i18n (1.12.0)
