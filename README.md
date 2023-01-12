@@ -138,6 +138,7 @@ DOCKERHUB_USERNAME=XXXXXXXXXX # deprecated but still supported username specific
 SHIPLANE_CONTAINER_REGISTRY_TOKEN=XXXXXXXXXX # Token for container registry authentication
 SHIPLANE_CONTAINER_REGISTRY_USERNAME=XXXXXXXXXX # Username for container registry authentication
 RAISE_EXCEPTIONS_ON_FAILED_BUILD=true # Tells Shiplane to stop on a failed build and raise an exception. Defaults to 'false'
+DOCKER_COMPOSE_V1_COMPATIBILITY=true # Set this if you are using docker-compose or using docker compose in compatibility mode. See this StackOverflow Question for some details: https://stackoverflow.com/questions/69464001/docker-compose-container-name-use-dash-instead-of-underscore
 ```
 ## Important ENVIRONMENT VARIABLES for runtime
 # Rails Environment Variable sample

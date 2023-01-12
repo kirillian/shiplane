@@ -188,11 +188,17 @@ module Shiplane
     end
 
     def build_output_image_name(artifact_name)
-      @build_output_image_name ||= "#{appname}-#{sha}_#{artifact_name}:latest"
+      @build_output_image_name ||= "#{appname}-#{sha}#{docker_compose_separator}#{artifact_name}:latest"
     end
 
     def build_cache_option
       ENV['USE_BUILD_CACHE'] == 'true' ? nil : "--no-cache"
+    end
+
+    def docker_compose_separator
+      return '_' if ENV['DOCKER_COMPOSE_V1_COMPATIBILITY'] && ENV['DOCKER_COMPOSE_V1_COMPATIBILITY'] == 'true'
+
+      '-'
     end
 
     # API Helper Methods
