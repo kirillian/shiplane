@@ -9,7 +9,7 @@ require_relative 'configuration'
 module Shiplane
   class Build
     extend Forwardable
-    attr_accessor :sha, :postfix, :tag_latest, :stage, :build_environment_variables
+    attr_accessor :sha, :postfix, :tag_latest, :stage, :build_environment_variables, :run_folder
 
     delegate %i(build_config project_config build_environment_filepath) => :shiplane_config
 
@@ -18,6 +18,7 @@ module Shiplane
       @tag_latest = tag_latest
       @postfix = postfix
       @stage = stage
+      @run_folder = Dir.pwd
 
       Dotenv.overload File.join(Dir.pwd, build_environment_filepath)
 
@@ -78,7 +79,7 @@ module Shiplane
         '-f',
         docker_compose_filepath,
         '--env-file',
-        build_environment_filepath,
+        File.join(run_folder, build_environment_filepath),
         'build',
         build_cache_option,
         artifact_name,
@@ -126,7 +127,7 @@ module Shiplane
     end
 
     def project_folder
-      @project_folder ||= File.join(Dir.pwd, 'docker_builds', appname, project_folder_name)
+      @project_folder ||= File.join(run_folder, 'docker_builds', appname, project_folder_name)
     end
 
     def shiplane_config
