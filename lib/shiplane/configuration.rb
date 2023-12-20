@@ -2,7 +2,7 @@ module Shiplane
   class Configuration
     attr_accessor :project_folder, :stage
 
-    def initialize(project_folder: nil, stage: stage)
+    def initialize(project_folder: nil, stage: 'production')
       @project_folder = project_folder || Dir.pwd
       @stage = stage
     end
