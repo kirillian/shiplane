@@ -1,6 +1,8 @@
 require 'sshkit'
 require 'sshkit/dsl'
 
+require_relative 'safe_yaml_loading'
+
 module Shiplane
   class Host
     extend Forwardable
@@ -82,7 +84,7 @@ module Shiplane
     end
 
     def self.config
-      @config ||= YAML.load(File.read(config_filepath))
+      @config ||= Shiplane::SafeYamlLoading.load_file(config_filepath)
     end
 
     def self.config_filepath

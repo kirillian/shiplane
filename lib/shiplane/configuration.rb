@@ -1,3 +1,5 @@
+require_relative 'safe_yaml_loading'
+
 module Shiplane
   class Configuration
     attr_accessor :project_folder, :stage
@@ -12,7 +14,7 @@ module Shiplane
     end
 
     def config
-      @config ||= YAML.load_file(shiplane_config_file)
+      @config ||= Shiplane::SafeYamlLoading.load_file(shiplane_config_file)
     end
 
     def build_config

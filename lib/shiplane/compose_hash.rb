@@ -1,4 +1,5 @@
 require_relative 'extensions'
+require_relative 'safe_yaml_loading'
 
 module Shiplane
   class ComposeHash
@@ -14,7 +15,7 @@ module Shiplane
     end
 
     def compose_hash
-      @compose_hash ||= YAML.load(compose_file)
+      @compose_hash ||= Shiplane::SafeYamlLoading.load(compose_file)
     end
 
     def whitelisted_hash

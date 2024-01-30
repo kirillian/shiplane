@@ -2,6 +2,8 @@ require 'rake'
 require 'dotenv'
 require 'open3'
 
+require_relative '../../../../../lib/shiplane/safe_yaml_loading'
+
 desc "Provision host"
 task :provision, [:role, :username, :keypath] => ['provision:default']
 
@@ -200,7 +202,7 @@ class HostOptions
   end
 
   def config
-    @config ||= YAML.load(File.read(config_file_path))['capistrano']
+    @config ||= Shiplane::SafeYamlLoading.load_file(config_file_path)['capistrano']
   end
 
   def ssh_options

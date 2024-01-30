@@ -5,6 +5,7 @@ require_relative 'checkout_artifact'
 require_relative 'convert_compose_file'
 require_relative 'convert_dockerfile'
 require_relative 'configuration'
+require_relative 'safe_yaml_loading'
 
 module Shiplane
   class Build
@@ -139,7 +140,7 @@ module Shiplane
     end
 
     def docker_config
-      @docker_config ||= YAML.load(File.new(docker_compose_filepath))
+      @docker_config ||= Shiplane::SafeYamlLoading.load_file(docker_compose_filepath)
     end
 
     def buildable_artifacts
