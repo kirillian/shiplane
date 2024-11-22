@@ -91,6 +91,7 @@ module Shiplane
           "--network=#{networks.first}",
           "--network-alias=#{network_alias}",
           virtual_host ? "-e VIRTUAL_HOST=#{virtual_host}" : nil,
+          "-e VIRTUAL_PORT=#{port}",
           letsencrypt_host ? "-e LETSENCRYPT_HOST=#{letsencrypt_host}" : nil,
           letsencrypt_email ? "-e LETSENCRYPT_EMAIL=#{letsencrypt_email}" : nil,
           environment.map{ |key, value| "-e #{key}=#{value}" },

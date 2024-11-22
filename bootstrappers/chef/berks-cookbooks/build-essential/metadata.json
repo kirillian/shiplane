@@ -26,21 +26,10 @@
   },
   "dependencies": {
     "seven_zip": ">= 0.0.0",
-    "mingw": ">= 1.1.0"
-  },
-  "recommendations": {
-  },
-  "suggestions": {
-  },
-  "conflicting": {
+    "mingw": ">= 1.1"
   },
   "providing": {
-  },
-  "replacing": {
-  },
-  "attributes": {
-  },
-  "groupings": {
+
   },
   "recipes": {
     "build-essential": "Installs packages required for compiling C software from source."
@@ -59,5 +48,6 @@
   ],
   "gems": [
 
-  ]
+  ],
+  "eager_load_libraries": true
 }

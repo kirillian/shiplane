@@ -21,10 +21,11 @@ docker_container 'nginx-proxy-letsencrypt' do
   action :nothing
   restart_policy 'always'
   entrypoint nil
-  repo 'jrcs/letsencrypt-nginx-proxy-companion'
+  repo 'nginxproxy/acme-companion'
   volumes_from 'nginx_reverse_proxy'
   volumes [
     '/var/run/docker.sock:/var/run/docker.sock:ro',
+    'acme:/etc/acme.sh',
   ]
 end
 

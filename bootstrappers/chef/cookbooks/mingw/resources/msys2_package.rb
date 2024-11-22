@@ -2,7 +2,7 @@
 # Cookbook:: mingw
 # Resource:: msys2_package
 #
-# Copyright:: 2016, Chef Software, Inc.
+# Copyright:: 2016-2019, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,16 +19,17 @@
 
 # Installs msys2 base system and installs/upgrades packages within in.
 #
-# Where's the version flag?  Where's idempotence you say?  Well f*** you
-# for trying to version your product.  This is arch.  They live on the edge.
-# You never get anything but the latest version.  And if that's broken...
-# well that's your problem isn't it?  And they don't believe in preserving
-# older versions.  Good luck!
+# Where's the version flag? Where's idempotence you say? Well f*** you
+# for trying to version your product. This is arch. They live on the edge.
+# You never get anything but the latest version. And if that's broken...
+# well that's your problem isn't it? And they don't believe in preserving
+# older versions. Good luck!
+unified_mode true
 
 property :package, String, name_property: true
 property :root, String, required: true
 
-resource_name :msys2_package
+provides :msys2_package
 
 action_class do
   #
@@ -97,7 +98,7 @@ action_class do
       cookbook 'mingw'
     end
 
-    # $HOME is using files from /etc/skel.  The home-directory creation step
+    # $HOME is using files from /etc/skel. The home-directory creation step
     # will automatically be performed if other users log in - so if you wish
     # to globally modify user first time setup, edit /etc/skel or add
     # "post-setup" steps to /etc/post-install/
@@ -125,10 +126,10 @@ action :install do
   msys2_do_action("installing #{package}", "pacman -S --needed --noconfirm #{package}")
 end
 
-# Package name is ignored.  This is arch.  Why would you ever upgrade a single
-# package and its deps?  That'll just break everything else that ever depended
-# on a different version of that dep.  Because arch is wonderful like that.
-# So you only get the choice to move everything to latest or not...  it's the
+# Package name is ignored. This is arch. Why would you ever upgrade a single
+# package and its deps? That'll just break everything else that ever depended
+# on a different version of that dep. Because arch is wonderful like that.
+# So you only get the choice to move everything to latest or not... it's the
 # most agile development possible!
 action :upgrade do
   msys2_do_action("upgrading #{package}", "pacman -Syu --noconfirm #{package}")

@@ -1,1 +1,48 @@
-{"name":"docker","version":"4.9.0","description":"Provides docker_service, docker_image, and docker_container resources","long_description":"","maintainer":"Chef Software, Inc.","maintainer_email":"cookbooks@chef.io","license":"Apache-2.0","platforms":{"amazon":">= 0.0.0","centos":">= 0.0.0","scientific":">= 0.0.0","oracle":">= 0.0.0","debian":">= 0.0.0","fedora":">= 0.0.0","redhat":">= 0.0.0","ubuntu":">= 0.0.0"},"dependencies":{},"recommendations":{},"suggestions":{},"conflicting":{},"providing":{},"replacing":{},"attributes":{},"groupings":{},"recipes":{},"source_url":"https://github.com/chef-cookbooks/docker","issues_url":"https://github.com/chef-cookbooks/docker/issues","gems":[["docker-api","~> 1.34.0"]],"chef_version":[[">= 12.15"]],"ohai_version":[]}
+{
+  "name": "docker",
+  "description": "Provides docker_service, docker_image, and docker_container resources",
+  "long_description": "",
+  "maintainer": "Sous Chefs",
+  "maintainer_email": "help@sous-chefs.org",
+  "license": "Apache-2.0",
+  "platforms": {
+    "amazon": ">= 0.0.0",
+    "centos": ">= 0.0.0",
+    "scientific": ">= 0.0.0",
+    "oracle": ">= 0.0.0",
+    "debian": ">= 0.0.0",
+    "fedora": ">= 0.0.0",
+    "redhat": ">= 0.0.0",
+    "ubuntu": ">= 0.0.0"
+  },
+  "dependencies": {
+
+  },
+  "providing": {
+
+  },
+  "recipes": {
+
+  },
+  "version": "11.5.2",
+  "source_url": "https://github.com/sous-chefs/docker",
+  "issues_url": "https://github.com/sous-chefs/docker/issues",
+  "privacy": false,
+  "chef_versions": [
+    [
+      "< 19.0",
+      ">= 16.0"
+    ]
+  ],
+  "ohai_versions": [
+
+  ],
+  "gems": [
+    [
+      "docker-api",
+      ">= 2.3",
+      "< 3"
+    ]
+  ],
+  "eager_load_libraries": true
+}

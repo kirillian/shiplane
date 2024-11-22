@@ -2,7 +2,7 @@
 # Cookbook:: mingw
 # Resource:: tdm_gcc
 #
-# Copyright:: 2016, Chef Software, Inc.
+# Copyright:: 2016-2019, Chef Software, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,12 +18,11 @@
 #
 
 # Installs a gcc based C/C++ compiler and runtime from TDM GCC.
+unified_mode true
 
 property :flavor, Symbol, is: [:sjlj_32, :seh_sjlj_64], default: :seh_sjlj_64
 property :root, String, required: true
 property :version, String, is: ['5.1.0'], name_property: true
-
-resource_name :mingw_tdm_gcc
 
 tdm_gcc_64 = {
   'http://iweb.dl.sourceforge.net/project/tdm-gcc/TDM-GCC%205%20series/5.1.0-tdm64-1/gcc-5.1.0-tdm64-1-core.tar.lzma' =>

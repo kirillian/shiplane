@@ -5,12 +5,6 @@
   },
   "json_class": "Chef::Role",
   "run_list": [
-    "recipe[n2docker::default]"
   ],
   "chef_type": "role",
-  "override_attributes": {
-    "n2docker": {
-      "version": "18.03.1"
-    }
-  }
 }

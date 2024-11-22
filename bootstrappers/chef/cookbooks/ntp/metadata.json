@@ -21,20 +21,10 @@
     "mac_os_x": ">= 0.0.0"
   },
   "dependencies": {
-  },
-  "recommendations": {
-  },
-  "suggestions": {
-  },
-  "conflicting": {
+
   },
   "providing": {
-  },
-  "replacing": {
-  },
-  "attributes": {
-  },
-  "groupings": {
+
   },
   "recipes": {
     "ntp": "Installs and configures ntp either as a server or client"
@@ -53,5 +43,6 @@
   ],
   "gems": [
 
-  ]
+  ],
+  "eager_load_libraries": true
 }

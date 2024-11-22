@@ -2,6 +2,105 @@
 
 This file is used to list changes made in each version of the yum-epel cookbook.
 
+## 5.0.8 - *2024-05-02*
+
+## 5.0.7 - *2024-05-02*
+
+## 5.0.6 - *2023-12-27*
+
+## 5.0.5 - *2023-10-31*
+
+## 5.0.4 - *2023-09-28*
+
+## 5.0.3 - *2023-09-04*
+
+## 5.0.2 - *2023-07-10*
+
+## 5.0.1 - *2023-06-08*
+
+Standardise files with files in sous-chefs/repo-management
+
+## 5.0.0 - *2023-04-17*
+
+- Remove EPEL Modular
+- Add support for Amazon Linux 2023
+
+## 4.5.1 - *2023-04-13*
+
+- Add renovate.json
+
+## 4.5.0 - *2022-06-03*
+
+- Remove epel-playground per upstream removal
+
+## 4.4.1 - *2022-02-02*
+
+- Remove delivery and move to calling RSpec directly via a reusable workflow
+
+## 4.4.0 - *2022-01-27*
+
+- Allow the cookbook to install EPEL on Alma Linux
+- Remove testing for CentOS 8 (use Stream instead)
+
+## 4.3.0 - *2022-01-07*
+
+- Allow the cookbook to install EPEL on Rocky Linux
+
+## 4.2.3 - *2021-11-03*
+
+- Rename helper method to `epel_8_repos` to not conflict with yum-centos
+
+## 4.2.2 - *2021-11-02*
+
+- Update documentation for epel on CentOS Stream
+
+## 4.2.1 - *2021-11-02*
+
+- Add epel and epel-debuginfo repos by default for CentOS Streams
+
+## 4.2.0 - *2021-11-02*
+
+- Add support for CentOS Stream 8
+
+## 4.1.4 - *2021-08-30*
+
+- Standardise files with files in sous-chefs/repo-management
+
+## 4.1.3 - *2021-07-14*
+
+- Remove deprecated `failoverprorioty` setting
+
+## 4.1.2 - *2021-06-01*
+
+- Standardise files with files in sous-chefs/repo-management
+
+## 4.1.1 - *2021-01-24*
+
+- Fix support for Oracle Linux
+
+## 4.1.0 - *2021-01-14*
+
+- Sous Chefs Adoption
+
+## 4.0.1 (2021-01-04)
+
+- Return empty array on non-yum systems - [@ramereth](https://github.com/ramereth)
+
+## 4.0.0 (2020-12-15)
+
+- Cookstyle fixes - [@tas50](https://github.com/tas50)
+- Switch all http URLs to HTTPS URLs - [@damacus](https://github.com/damacus)
+- Switch gpgkey urls - [@knightorc](https://github.com/knightorc)
+- Require Chef 12.15+ - [@tas50](https://github.com/tas50)
+- Remove CentOS 6 / Amazon Linux 201X support/testing - [@ramereth](https://github.com/ramereth)
+- Improve InSpec test by using yum.repo resource - [@ramereth](https://github.com/ramereth)
+- Fix repo descriptions on Amazon Linux - [@ramereth](https://github.com/ramereth)
+- Test all supported repos in new "all" suite - [@ramereth](https://github.com/ramereth)
+- Ensure other epel repos are not enabled in default suite - [@ramereth](https://github.com/ramereth)
+- Add various modular and playground repos for EL8 - [@ramereth](https://github.com/ramereth)
+- Update README - [@ramereth](https://github.com/ramereth)
+- Cleanup metadata.rb formatting - [@ramereth](https://github.com/ramereth)
+
 ## 3.3.0 (2018-10-09)
 
 - Fix cookbook to work on all releases of Amazon Linux 2

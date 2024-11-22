@@ -21,19 +21,8 @@
   "dependencies": {
     "yum-epel": ">= 0.0.0"
   },
-  "recommendations": {
-  },
-  "suggestions": {
-  },
-  "conflicting": {
-  },
   "providing": {
-  },
-  "replacing": {
-  },
-  "attributes": {
-  },
-  "groupings": {
+
   },
   "recipes": {
     "default": "Installs and configures fail2ban"
@@ -52,5 +41,6 @@
   ],
   "gems": [
 
-  ]
+  ],
+  "eager_load_libraries": true
 }

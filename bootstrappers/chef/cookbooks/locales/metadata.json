@@ -10,22 +10,13 @@
     "debian": ">= 0.0.0"
   },
   "dependencies": {
-  },
-  "recommendations": {
-  },
-  "suggestions": {
-  },
-  "conflicting": {
+
   },
   "providing": {
-  },
-  "replacing": {
-  },
-  "attributes": {
-  },
-  "groupings": {
+
   },
   "recipes": {
+
   },
   "version": "0.3.1",
   "source_url": "",
@@ -39,5 +30,6 @@
   ],
   "gems": [
 
-  ]
+  ],
+  "eager_load_libraries": true
 }

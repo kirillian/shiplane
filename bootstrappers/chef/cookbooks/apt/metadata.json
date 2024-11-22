@@ -10,20 +10,10 @@
     "debian": ">= 0.0.0"
   },
   "dependencies": {
-  },
-  "recommendations": {
-  },
-  "suggestions": {
-  },
-  "conflicting": {
+
   },
   "providing": {
-  },
-  "replacing": {
-  },
-  "attributes": {
-  },
-  "groupings": {
+
   },
   "recipes": {
     "apt::default": "Runs apt-get update during compile phase and sets up preseed directories",
@@ -44,5 +34,6 @@
   ],
   "gems": [
 
-  ]
+  ],
+  "eager_load_libraries": true
 }
