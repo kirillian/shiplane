@@ -3,7 +3,7 @@
 module Shiplane
   module Bootstrappers
     module Chef
-      VERSION = "0.2.29"
+      VERSION = "0.2.30"
     end
   end
 end
