@@ -172,6 +172,40 @@ else
   end
 end
 
+vhost_config_filepaths = run_context.cookbook_collection['barebones-docker'].manifest
+                      .fetch('all_files', [])
+                      .select{|file| file['path'] =~ /files\/(default\/)?nginx-proxy\/vhost\.d\/.*/ }
+                      .map{|file| file['path'][/nginx-proxy\/vhost\.d\/.*/] }
+
+unless vhost_config_filepaths.empty?
+  vhost_config_filepaths.each do |filepath|
+    cookbook_file "/etc/docker/#{filepath}" do
+      source "/files/default/#{filepath}"
+      owner "#{node.fetch("barebones-docker", {}).fetch("user", {}).fetch("name", "docker")}"
+      group "#{node.fetch("barebones-docker", {}).fetch("group", {}).fetch("name", "docker")}"
+      mode 0755
+      action :nothing
+      ignore_failure true
+    end
+  end
+
+  execute 'barebones_docker_write_vhost_config_files' do
+    command "echo 'proxy.conf' overridden. Skipping writing 'proxy.conf' ..."
+    vhost_config_filepaths.each do |filepath|
+      notifies :create, "cookbook_file[/etc/docker/#{filepath}]", :immediately
+    end
+
+    action :nothing
+  end
+else
+  execute 'barebones_docker_write_proxy_conf' do
+    command "echo 'proxy.conf' not found. Writing 'proxy.conf' ..."
+    notifies :create, "template[/etc/docker/nginx-proxy/proxy.conf]", :immediately
+
+    action :nothing
+  end
+end
+
 file '/var/log/nginx/access.log' do
   mode '0755'
   owner "#{node.fetch("barebones-docker", {}).fetch("user", {}).fetch("name", "docker")}"
