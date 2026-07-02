@@ -1,5 +1,21 @@
 ![Shiplane](assets/shiplane_logo.jpg)
 
+> ## An honest note (2026)
+>
+> Shiplane is no longer under active development. If you're looking for a modern, well-supported Docker deployment tool, use [Kamal](https://kamal-deploy.org). It solves the same problems Shiplane tried to solve, does so with fewer moving parts, and has the momentum of a large community behind it.
+>
+> I built Shiplane because I kept watching the same thing happen in client work: teams that had figured out Docker in development were treating production as a foreign country, spending weeks rebuilding what already worked locally. It didn't need to be that hard. Shiplane was my attempt to prove that.
+>
+> The tool never won a popularity contest. But the belief underneath it, that your production deployment should look and feel like a straight-line extension of what already runs on your laptop, has since become mainstream. Kamal is the clearest expression of that belief today, and I recommend it happily.
+>
+> Thanks to everyone who tried Shiplane, contributed, opened issues, took stickers at conferences, or trusted it in production. It meant something to build.
+>
+> For the longer retrospective on why I built this and where deployment tooling is going, see [rockagile.io/shiplane](https://www.rockagile.io/shiplane).
+>
+> — John Epperson
+
+---
+
 Convert your development docker-compose yaml files into production-ready docker deployments
 
 ## The Mission
